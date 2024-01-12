@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "199673986260",
+    "project_id": "runningeveryday-24cfa",
+    "storage_bucket": "runningeveryday-24cfa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:199673986260:android:53f9729807a5880ced0f41",
+        "android_client_info": {
+          "package_name": "com.example.runningeveryday"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "199673986260-0fuotujgcqhpj07ukm46q6hi46jf1m7o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.runningeveryday",
+            "certificate_hash": "e3daae236c6b4071b20ec474e521900621029438"
+          }
+        },
+        {
+          "client_id": "199673986260-vo7vrrdsbakqahdiatd67992877pp2uf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGfNqcSZ7nSOx0pMHMOAvYGWedmli8wk8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "199673986260-vo7vrrdsbakqahdiatd67992877pp2uf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -8,4 +8,6 @@
     <string name="current_distance">0.0</string>
     <string name="max_distance">3.0 km</string>
     <string name="_00">00 : 00</string>
+    <string name="running_everyday">RunningEveryday</string>
+    <string name="running_everytime">Running Everyday</string>
 </resources>

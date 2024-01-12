@@ -1,11 +1,16 @@
 package com.example.runningeveryday
 
+import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.os.PowerManager
+import android.provider.Settings
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +18,8 @@ import android.view.ViewGroup
 import android.widget.Adapter
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -80,7 +87,25 @@ class MeasureFragment : Fragment() {
         }
 
         binding.measureStartButton.setOnClickListener {
-            sendCommandToForegroundService(MeasureState.START)
+
+            if(ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+                sendCommandToForegroundService(MeasureState.START)
+            } else {
+                AlertDialog.Builder(requireContext()).apply {
+                    setTitle("백그라운드 위치 정보 수집 권한 요청")
+                    setMessage("운동 중 정확한 거리 측정을 위해 위치 엑세스 권한을 항상 허용으로 주세요")
+                    setPositiveButton("권한 설정하러 가기", DialogInterface.OnClickListener { _, _ ->
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            .setData(Uri.parse("package:${requireContext().packageName}"))
+                        startActivity(intent)
+                        //ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 1)
+                    })
+                    setNegativeButton("거부하기", null)
+                    show()
+                }
+            }
+
         }
         binding.measureStopButton.setOnClickListener {
             sendCommandToForegroundService(MeasureState.STOP)
