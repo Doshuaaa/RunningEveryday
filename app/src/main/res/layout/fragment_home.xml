@@ -104,6 +104,60 @@
         android:layout_weight="2"
         android:layout_margin="30dp">
 
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            tools:ignore="NestedWeights"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/weather_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="화창"
+                android:gravity="center"
+                android:layout_marginTop="10dp"/>
+
+            <ImageView
+                android:id="@+id/weather_image_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/clouds_and_sun"
+                android:layout_marginBottom="10dp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/temp_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="12℃"
+                android:textSize="30sp"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/pop_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="강수확률: 60%"
+                android:gravity="center"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/skip_run_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="오늘 운동 스킵"/>
+
+        </LinearLayout>
+
 
     </LinearLayout>
 

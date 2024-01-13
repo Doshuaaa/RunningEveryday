@@ -11,6 +11,11 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 const val SERVICE_COMMAND = "ServiceCommand"
 
@@ -20,7 +25,7 @@ const val DISTANCE_ACTION = "distance_action"
 const val NOTIFICATION_TIME = "NotificationTime"
 const val NOTIFICATION_DISTANCE = "NotificationDistance"
 
-class MeasureService : Service() {
+class MeasureService : Service(), CoroutineScope{
 
     private var serviceState: MeasureState = MeasureState.INITIALIZED
     private val helper: NotificationHelper by lazy {  NotificationHelper(this) }
@@ -40,6 +45,11 @@ class MeasureService : Service() {
             handler.postDelayed(this, 1000)
         }
     }
+
+    private val job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + job
+
     private val locationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
             if(lastLocation != null) {
@@ -80,12 +90,14 @@ class MeasureService : Service() {
         locationManager.removeUpdates(locationListener)
         helper.notificationCancel()
         wakeLock.release()
+        job.cancel()
     }
 
     private fun measureStart() {
         serviceState = MeasureState.START
 
         startForeground(NotificationHelper.NOTIFICATION_ID, helper.getNotification())
+        broadcastTimeUpdate()
 
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 10f, locationListener)
@@ -93,8 +105,10 @@ class MeasureService : Service() {
             e.printStackTrace()
         }
 
-        handler.post(runnable)
-        broadcastTimeUpdate()
+        launch(coroutineContext){
+            handler.post(runnable)
+        }
+
     }
 
     private fun measureStop() {
