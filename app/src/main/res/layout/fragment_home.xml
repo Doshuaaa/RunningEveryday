@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
     android:orientation="vertical"
-    android:weightSum="10">
+    android:weightSum="11"
+    tools:context=".MainActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -17,33 +17,33 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/running_everytime"
             android:layout_alignParentStart="true"
-            android:layout_marginStart="15dp"
             android:layout_centerVertical="true"
-            android:textStyle="bold"/>
+            android:layout_marginStart="15dp"
+            android:text="@string/running_everytime"
+            android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/setting_img_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/baseline_settings_24"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="15dp"/>
+            android:layout_marginEnd="15dp"
+            android:src="@drawable/baseline_settings_24" />
 
     </RelativeLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3">
+        android:layout_weight="2.5">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:weightSum="3"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:weightSum="3">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -56,11 +56,12 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_margin="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="30dp"
             android:background="#ffffff"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -76,10 +77,10 @@
                     android:id="@+id/profile_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="김민수 님 안녕하세요"
-                    android:layout_toEndOf="@+id/profile_img_view"
                     android:layout_centerVertical="true"
-                    android:layout_marginStart="20dp"/>
+                    android:layout_marginStart="20dp"
+                    android:layout_toEndOf="@+id/profile_img_view"
+                    android:text="김민수 님 안녕하세요" />
             </LinearLayout>
 
             <LinearLayout
@@ -92,7 +93,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:text="3일째 스트릭 기록중!"
-                    android:textSize="24sp"/>
+                    android:textSize="24sp" />
             </LinearLayout>
 
         </LinearLayout>
@@ -101,63 +102,178 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"
-        android:layout_margin="30dp">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            tools:ignore="NestedWeights"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/weather_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="화창"
-                android:gravity="center"
-                android:layout_marginTop="10dp"/>
-
-            <ImageView
-                android:id="@+id/weather_image_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:src="@drawable/clouds_and_sun"
-                android:layout_marginBottom="10dp"/>
-
-        </LinearLayout>
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_weight="2">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center">
+            tools:ignore="NestedWeights">
+
+            <TextView
+                android:id="@+id/weather_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="화창" />
+
+            <ImageView
+                android:id="@+id/weather_image_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:src="@drawable/clouds_and_sun" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/temp_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:text="12℃"
-                android:textSize="30sp"
-                android:gravity="center" />
+                android:textSize="30sp" />
 
             <TextView
                 android:id="@+id/pop_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="강수확률: 60%"
-                android:gravity="center"/>
+                android:gravity="center"
+                android:text="강수확률: 60%" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/skip_run_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="오늘 운동 스킵"/>
+                android:text="오늘 운동 스킵" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="15dp"
+        android:layout_weight="5.5"
+        android:background="@drawable/shape_border_rect"
+        android:orientation="vertical"
+        android:weightSum="8">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            tools:ignore="NestedWeights">
+
+            <ImageButton
+                android:id="@+id/calendar_left_image_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="#ffffff"
+                android:src="@drawable/baseline_arrow_left_24" />
+
+            <TextView
+                android:id="@+id/calendar_month_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2024년 1월" />
+
+            <ImageButton
+                android:id="@+id/calendar_right_image_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="#ffffff"
+                android:src="@drawable/baseline_arrow_right_24" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="일"
+                android:textColor="#FF0000"
+                android:textSize="15dp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="월"
+                android:textColor="@color/black"
+                android:textSize="15dp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="화"
+                android:textColor="@color/black"
+                android:textSize="15dp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="수"
+                android:textColor="@color/black"
+                android:textSize="15dp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="목"
+                android:textColor="@color/black"
+                android:textSize="15dp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="금"
+                android:textColor="@color/black"
+                android:textSize="15dp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="토"
+                android:textColor="#0000FF"
+                android:textSize="15dp" />
 
         </LinearLayout>
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/calendar_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="7" />
 
     </LinearLayout>
 

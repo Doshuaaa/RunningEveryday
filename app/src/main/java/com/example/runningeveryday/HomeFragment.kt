@@ -1,14 +1,24 @@
 package com.example.runningeveryday
 
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Point
+import android.graphics.drawable.ColorDrawable
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
+import com.bumptech.glide.Glide
+import com.example.runningeveryday.adapter.MonthAdapter
+import com.example.runningeveryday.databinding.DialogProgressBinding
 import com.example.runningeveryday.databinding.FragmentHomeBinding
 import com.example.runningeveryday.model.Weather
 import com.example.runningeverytime.api.WeatherApi
@@ -52,8 +62,16 @@ class HomeFragment : Fragment() {
 
     private var viewBinding: FragmentHomeBinding? = null
     val binding: FragmentHomeBinding get() = viewBinding!!
+    private lateinit var loadingDialog : LoadingDialog
+    var loadCount = 0
+    //val loadingDlg = LoadingDialog(requireContext())
 
-
+    private val dlgDismissHandler = Handler(Looper.getMainLooper())
+    private val runnable = Runnable {
+        if(loadCount == 1) {
+            loadingDialog.dismiss()
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -61,12 +79,15 @@ class HomeFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
         viewBinding = FragmentHomeBinding.inflate(layoutInflater)
+        loadingDialog = LoadingDialog(requireContext())
+        loadingDialog.show()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         val locationManager: LocationManager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         var curLocation: Location? = null
         try {
@@ -77,6 +98,7 @@ class HomeFragment : Fragment() {
 
         curPoint = dfs_xy_conv(curLocation!!.latitude, curLocation.longitude)
         setWeather(curPoint!!.x.toString(), curPoint!!.y.toString() )
+        initCalendar()
         return binding.root
     }
 
@@ -167,12 +189,16 @@ class HomeFragment : Fragment() {
         }
 
         binding.tempTextView.text = getString(R.string.temp, temp)
+        binding.weatherTextView.text = type
 
         if(rainRatio.toInt() >= 60) {
             binding.skipRunButton.visibility = View.VISIBLE
         } else {
             binding.skipRunButton.visibility = View.GONE
         }
+
+        loadCount++
+        dlgDismissHandler.post(runnable)
     }
 
     private fun getTime(time : String) : String{
@@ -186,9 +212,10 @@ class HomeFragment : Fragment() {
             in "18".."20" -> "1400"
             else -> "1700"
         }
+
     }
 
-    fun dfs_xy_conv(v1: Double, v2: Double) : Point {
+    private fun dfs_xy_conv(v1: Double, v2: Double) : Point {
         val RE = 6371.00877     // 지구 반경(km)
         val GRID = 5.0          // 격자 간격(km)
         val SLAT1 = 30.0        // 투영 위도1(degree)
@@ -224,6 +251,16 @@ class HomeFragment : Fragment() {
         return Point(x, y)
     }
 
+    private fun initCalendar() {
+        val calRecyclerView = binding.calendarRecyclerView
+        calRecyclerView.adapter = MonthAdapter(requireContext())
+        calRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        calRecyclerView.scrollToPosition(11)
+        PagerSnapHelper().attachToRecyclerView(calRecyclerView)
+        loadCount++
+        dlgDismissHandler.post(runnable)
+    }
+
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -242,5 +279,19 @@ class HomeFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    inner class LoadingDialog(private val context: Context) : Dialog(context) {
+
+        private var viewBinding: DialogProgressBinding? = null
+        private val binding get() = viewBinding!!
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+            viewBinding = DialogProgressBinding.inflate(layoutInflater)
+            Glide.with(context).load(R.raw.load_32_128).into(binding.loadingImageView)
+            setContentView(binding.root)
+            setCancelable(false)
+            window?.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
+        }
     }
 }

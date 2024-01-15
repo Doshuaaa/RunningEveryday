@@ -15,6 +15,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginActivity : AppCompatActivity() {
 
@@ -27,6 +28,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityLoginBinding.inflate(layoutInflater)
+        auth.signOut()
         setContentView(binding.root)
         setResultSingUp()
 
@@ -68,10 +70,31 @@ class LoginActivity : AppCompatActivity() {
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         auth.signInWithCredential(credential).addOnCompleteListener {
             if(it.isSuccessful) {
+                initUid()
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 finish()
             }
         }
+    }
+
+    private fun initUid() {
+        val fireStore = FirebaseFirestore.getInstance()
+        var flag = false
+        val collectionReference = fireStore.collection("users")
+        collectionReference.get().addOnSuccessListener {task ->
+            for(document in task.documents) {
+                if(document.id == auth.uid) {
+                    flag = true
+                    break
+                }
+            }
+        }
+
+        if(!flag) {
+            val emptyData = hashMapOf<String, Any>()
+            collectionReference.document(auth.uid!!).set(emptyData)
+        }
+
     }
 }

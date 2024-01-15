@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val REQUEST_CODE_PERMISSIONS = 1001
     }
-
+    private val activity = this
     private var viewBinding: ActivityMainBinding? = null
     private val binding get() = viewBinding!!
 

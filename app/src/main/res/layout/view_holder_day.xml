@@ -1,0 +1,33 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_day_layout"
+    android:layout_width="70dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dp"
+    android:layout_marginStart="15dp"
+    android:layout_marginEnd="15dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:layout_marginTop="9dp"
+        android:text="13"
+        android:layout_marginLeft="9dp"
+        android:layout_marginRight="9dp"
+        android:layout_marginBottom="4dp"
+        android:id="@+id/day_of_week_textView"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/check_grade_text_view"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:textSize="19dp"
+        android:layout_marginLeft="9dp"
+        android:layout_marginRight="9dp"
+        android:textColor="@color/white"
+        android:background="@drawable/round_day"
+        android:backgroundTint="#C81313"
+        android:gravity="center" />
+
+</LinearLayout>
