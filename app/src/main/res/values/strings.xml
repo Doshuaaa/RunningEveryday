@@ -12,4 +12,9 @@
     <string name="running_everytime">Running Everyday</string>
     <string name="pop">강수확률: %1s%%</string>
     <string name="temp">%1s℃</string>
+    <string name="profile_name">%1s님 안녕하세요</string>
+    <string name="plz_select_sex_text_view">성별을 골라주세요</string>
+    <string name="man">남</string>
+    <string name="woman">여</string>
+    <string name="confirm">확인</string>
 </resources>

@@ -11,10 +11,13 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import kotlin.coroutines.CoroutineContext
 
 const val SERVICE_COMMAND = "ServiceCommand"
@@ -33,6 +36,16 @@ class MeasureService : Service(), CoroutineScope{
     private var targetDistance = 0f
     private var currentTime = 0
     private var totalDistance = 0f
+
+    private val calendar = Calendar.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+    private val fireStore = FirebaseFirestore.getInstance()
+
+    private val collectionReference =
+        fireStore.collection("users").document(auth.uid!!)
+        .collection("record")
+        .document("${calendar.get(Calendar.YEAR)}${calendar.get(calendar.get((Calendar.MONTH)))}")
+        .collection(targetDistance.toString())
 
     private val locationManager by lazy { getSystemService(Context.LOCATION_SERVICE) as LocationManager}
     private var lastLocation: Location? = null
@@ -57,6 +70,16 @@ class MeasureService : Service(), CoroutineScope{
             }
             lastLocation = location
 
+            if(totalDistance >= targetDistance) {
+
+//                val data = hashMapOf(
+//                    "time" to currentTime
+//                    "grade" to
+//                )
+//                collectionReference.add(currentTime)
+//                cp;
+                measureStop()
+            }
         }
     }
 
@@ -141,4 +164,7 @@ class MeasureService : Service(), CoroutineScope{
         }
     }
 
+    private fun getGrade() {
+
+    }
 }

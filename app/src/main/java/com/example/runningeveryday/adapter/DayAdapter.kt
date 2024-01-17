@@ -33,7 +33,7 @@ class DayAdapter(val tempMonth: Int, val dayList: MutableList<Date>, val context
             holder.dayTextView.alpha=0.4f
         }
 
-        if(position % 7 == 1) {
+        if(position % 7 == 6) {
             holder.dayTextView.setTextColor(ContextCompat.getColor(holder.layout.context, R.color.blue))
         } else if ( position % 7 == 0) {
             holder.dayTextView.setTextColor(ContextCompat.getColor(holder.layout.context, R.color.red))

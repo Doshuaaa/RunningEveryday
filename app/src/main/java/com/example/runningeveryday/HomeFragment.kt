@@ -22,6 +22,7 @@ import com.example.runningeveryday.databinding.DialogProgressBinding
 import com.example.runningeveryday.databinding.FragmentHomeBinding
 import com.example.runningeveryday.model.Weather
 import com.example.runningeverytime.api.WeatherApi
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -68,7 +69,7 @@ class HomeFragment : Fragment() {
 
     private val dlgDismissHandler = Handler(Looper.getMainLooper())
     private val runnable = Runnable {
-        if(loadCount == 1) {
+        if(loadCount == 2) {
             loadingDialog.dismiss()
         }
     }
@@ -99,6 +100,7 @@ class HomeFragment : Fragment() {
         curPoint = dfs_xy_conv(curLocation!!.latitude, curLocation.longitude)
         setWeather(curPoint!!.x.toString(), curPoint!!.y.toString() )
         initCalendar()
+        getCurrentUserProfile()
         return binding.root
     }
 
@@ -293,5 +295,12 @@ class HomeFragment : Fragment() {
             setCancelable(false)
             window?.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
         }
+    }
+
+    private fun getCurrentUserProfile() {
+        val curUser = GoogleSignIn.getLastSignedInAccount(requireContext())
+        Glide.with(requireContext()).load(curUser?.photoUrl.toString()).into(binding.profileImgView)
+        binding.profileTextView.text = getString(R.string.profile_name, curUser?.displayName)
+        loadCount++
     }
 }

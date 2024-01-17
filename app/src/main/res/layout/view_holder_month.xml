@@ -5,6 +5,7 @@
     
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/month_adapter_recycler_view"
+        android:layout_marginStart="10dp"
         android:layout_width="340dp"
         android:layout_height="match_parent"/>
 
