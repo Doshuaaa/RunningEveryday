@@ -1,7 +1,9 @@
 package com.example.runningeveryday
 
 import android.app.Dialog
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.location.Location
@@ -267,6 +269,19 @@ class HomeFragment : Fragment() {
         dlgDismissHandler.post(runnable)
     }
 
+//    inner class PageSnapReceiver : BroadcastReceiver() {
+//        override fun onReceive(p0: Context?, intent: Intent?) {
+//
+//            if(intent?.action == "PageSnap") {
+//
+//                when(intent.getIntExtra("Page", 0))
+//            }
+//        }
+//
+//    }
+
+
+
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -315,7 +330,6 @@ class HomeFragment : Fragment() {
         val calendar = Calendar.getInstance()
         val dateFormat = SimpleDateFormat("YYYYMM", Locale.KOREA)
 
-
         val collectionReference = fireStore.collection("users")
             .document(auth.uid!!).collection("record")
 
@@ -347,4 +361,6 @@ class HomeFragment : Fragment() {
             dlgDismissHandler.post(runnable)
         }
     }
+
+
 }

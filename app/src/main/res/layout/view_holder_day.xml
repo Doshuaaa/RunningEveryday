@@ -18,7 +18,7 @@
         android:layout_marginBottom="4dp"
         android:id="@+id/day_of_week_textView"/>
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <ImageView
         android:id="@+id/check_grade_text_view"
         android:layout_width="15dp"
         android:layout_height="15dp"
@@ -26,7 +26,7 @@
         android:layout_marginLeft="9dp"
         android:layout_marginRight="9dp"
         android:textColor="@color/white"
-        android:background="@drawable/round_day"
+
         android:backgroundTint="#C81313"
         android:gravity="center" />
 
