@@ -28,7 +28,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityLoginBinding.inflate(layoutInflater)
-        auth.signOut()
+        //auth.signOut()
         setContentView(binding.root)
         setResultSingUp()
 
@@ -44,7 +44,7 @@ class LoginActivity : AppCompatActivity() {
             .requestProfile()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
-        googleSignInClient.signOut()
+        //googleSignInClient.signOut()
 
         binding.googleSignInButton.setOnClickListener {
             signIn()
@@ -95,6 +95,5 @@ class LoginActivity : AppCompatActivity() {
             val emptyData = hashMapOf<String, Any>()
             collectionReference.document(auth.uid!!).set(emptyData)
         }
-
     }
 }

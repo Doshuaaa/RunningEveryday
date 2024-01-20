@@ -48,6 +48,10 @@ class NotificationHelper(context: Context) {
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
     }
 
+    fun completeNotification(targetDistance: Float, curTime: Int) {
+        notificationBuilder.setContentText("${targetDistance}m 측정 완료!  <걸린 시간: ${curTime / 60} : ${curTime % 60}>")
+    }
+
     fun notificationCancel() {
         notificationManager.cancel(NOTIFICATION_ID)
     }

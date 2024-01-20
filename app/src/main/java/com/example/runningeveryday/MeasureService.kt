@@ -17,7 +17,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 import kotlin.coroutines.CoroutineContext
 
 const val SERVICE_COMMAND = "ServiceCommand"
@@ -44,7 +46,7 @@ class MeasureService : Service(), CoroutineScope{
     private val collectionReference =
         fireStore.collection("users").document(auth.uid!!)
         .collection("record")
-        .document("${calendar.get(Calendar.YEAR)}${calendar.get(calendar.get((Calendar.MONTH)))}")
+        .document("${calendar.get(Calendar.YEAR)}${calendar.get((Calendar.MONTH))}")
         .collection(targetDistance.toString())
 
     private val locationManager by lazy { getSystemService(Context.LOCATION_SERVICE) as LocationManager}
@@ -72,13 +74,9 @@ class MeasureService : Service(), CoroutineScope{
 
             if(totalDistance >= targetDistance) {
 
-//                val data = hashMapOf(
-//                    "time" to currentTime
-//                    "grade" to
-//                )
-//                collectionReference.add(currentTime)
-//                cp;
+                record()
                 measureStop()
+                helper.completeNotification(targetDistance, currentTime)
             }
         }
     }
@@ -112,7 +110,10 @@ class MeasureService : Service(), CoroutineScope{
         handler.removeCallbacks(runnable)
         locationManager.removeUpdates(locationListener)
         helper.notificationCancel()
-        wakeLock.release()
+        if(wakeLock.isHeld) {
+            wakeLock.release()
+        }
+
         job.cancel()
     }
 
@@ -141,6 +142,7 @@ class MeasureService : Service(), CoroutineScope{
         handler.removeCallbacks(runnable)
         locationManager.removeUpdates(locationListener)
         stopForeground(STOP_FOREGROUND_DETACH)
+        helper.notificationCancel()
         wakeLock.release()
     }
 
@@ -161,10 +163,45 @@ class MeasureService : Service(), CoroutineScope{
         }
         else {
             sendBroadcast(Intent(DISTANCE_ACTION).putExtra(NOTIFICATION_DISTANCE, 0))
+            helper.notificationCancel()
         }
     }
 
     private fun getGrade() {
 
     }
+
+    private fun record() {
+
+        val documentReference =
+            fireStore.collection("users").document(auth.uid!!)
+                .collection("record")
+                .document(SimpleDateFormat("YYYYMM", Locale.KOREA).format(calendar.time).toString())
+
+
+
+        val timeData = hashMapOf(
+            "time" to currentTime
+        )
+        documentReference.collection(calendar.get(Calendar.DAY_OF_MONTH).toString())
+            .document(targetDistance.toString()).set(timeData)
+
+        val dateData = hashMapOf(
+            calendar.get(Calendar.DAY_OF_MONTH).toString() to "ok"
+        )
+        documentReference.set(dateData)
+//        documentReference.get().addOnSuccessListener {  task ->
+//
+//            if(task.exists()) {
+//                count = task.get("count") as Int
+//            }
+//        }
+
+
+//        collectionReference
+//            .collection("${calendar.get(Calendar.DAY_OF_MONTH)}")
+//            .document(targetDistance.toString()).set(data)
+
+    }
+
 }

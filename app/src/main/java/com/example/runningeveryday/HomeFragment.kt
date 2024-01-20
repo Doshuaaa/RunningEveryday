@@ -23,6 +23,8 @@ import com.example.runningeveryday.databinding.FragmentHomeBinding
 import com.example.runningeveryday.model.Weather
 import com.example.runningeverytime.api.WeatherApi
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -30,6 +32,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.TimeZone
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -65,11 +68,12 @@ class HomeFragment : Fragment() {
     val binding: FragmentHomeBinding get() = viewBinding!!
     private lateinit var loadingDialog : LoadingDialog
     var loadCount = 0
+    var streak = 0
     //val loadingDlg = LoadingDialog(requireContext())
 
     private val dlgDismissHandler = Handler(Looper.getMainLooper())
     private val runnable = Runnable {
-        if(loadCount == 2) {
+        if(loadCount == 3) {
             loadingDialog.dismiss()
         }
     }
@@ -301,6 +305,46 @@ class HomeFragment : Fragment() {
         val curUser = GoogleSignIn.getLastSignedInAccount(requireContext())
         Glide.with(requireContext()).load(curUser?.photoUrl.toString()).into(binding.profileImgView)
         binding.profileTextView.text = getString(R.string.profile_name, curUser?.displayName)
-        loadCount++
+        getStreak()
+    }
+
+    private fun getStreak() {
+
+        val fireStore = FirebaseFirestore.getInstance()
+        val auth = FirebaseAuth.getInstance()
+        val calendar = Calendar.getInstance()
+        val dateFormat = SimpleDateFormat("YYYYMM", Locale.KOREA)
+
+
+        val collectionReference = fireStore.collection("users")
+            .document(auth.uid!!).collection("record")
+
+        collectionReference.get().addOnSuccessListener {task ->
+
+            val list = task.documents
+            list.reverse()
+            for(document in list) {
+
+                if(dateFormat.format(calendar.time) == document.id) {
+                    val dayList = document.data
+                    if (streak == 0) {
+
+                        if(dayList?.get(calendar.get(Calendar.DAY_OF_MONTH).toString()) != null) {
+                            streak++
+                        }
+                        calendar.add(Calendar.DAY_OF_MONTH, -1)
+                    }
+
+                    while (dayList?.get(calendar.get(Calendar.DAY_OF_MONTH).toString()) != null) {
+                        streak++
+                        calendar.add(Calendar.DAY_OF_MONTH, -1)
+
+                    }
+                }
+            }
+            binding.streakTextView.text = getString(R.string.streak, streak)
+            loadCount++
+            dlgDismissHandler.post(runnable)
+        }
     }
 }

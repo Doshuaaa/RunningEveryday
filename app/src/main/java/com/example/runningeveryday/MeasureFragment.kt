@@ -9,13 +9,11 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.os.PowerManager
 import android.provider.Settings
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Adapter
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
@@ -24,6 +22,11 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.runningeveryday.databinding.FragmentMeasureBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -55,7 +58,13 @@ class MeasureFragment : Fragment() {
     }
     private val measureReceiver = MeasureReceiver()
 
+    private val fireStore = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+    private val calendar = Calendar.getInstance()
 
+    //
+    private var tempTime = 0
+    //
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -109,6 +118,7 @@ class MeasureFragment : Fragment() {
         }
         binding.measureStopButton.setOnClickListener {
             sendCommandToForegroundService(MeasureState.STOP)
+            record()
         }
 
         return binding.root
@@ -169,15 +179,52 @@ class MeasureFragment : Fragment() {
 
             if(intent.action == TIMER_ACTION) {
                 val time = intent.getIntExtra(NOTIFICATION_TIME, 0)
+                tempTime = time
                 updateTimeUi(time)
             } else if (intent.action == DISTANCE_ACTION) {
                 val distance = intent.getFloatExtra(NOTIFICATION_DISTANCE, 0f)
                 updateDistanceUi(distance)
             }
         }
+    }
+    ///////
+    private fun record() {
+        val targetDistance =
+            when(selectPosition) {
+                0 -> 1500
+                else -> 3000
+        }
+
+        val documentReference =
+            fireStore.collection("users").document(auth.uid!!)
+                .collection("record")
+                .document(SimpleDateFormat("YYYYMM", Locale.KOREA).format(calendar.time).toString())
+
+
+
+        val timeData = hashMapOf(
+            "time" to tempTime
+        )
+        documentReference.collection(calendar.get(Calendar.DAY_OF_MONTH).toString())
+            .document(targetDistance.toString()).set(timeData)
+
+        val dateData = hashMapOf(
+            calendar.get(Calendar.DAY_OF_MONTH).toString() to "ok"
+        )
+        documentReference.set(dateData)
+//        documentReference.get().addOnSuccessListener {  task ->
+//
+//            if(task.exists()) {
+//                count = task.get("count") as Int
+//            }
+//        }
+
+
+//        collectionReference
+//            .collection("${calendar.get(Calendar.DAY_OF_MONTH)}")
+//            .document(targetDistance.toString()).set(data)
 
     }
-
 
 
     companion object {
@@ -198,6 +245,5 @@ class MeasureFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
-
     }
 }

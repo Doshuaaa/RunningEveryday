@@ -17,4 +17,5 @@
     <string name="man">남</string>
     <string name="woman">여</string>
     <string name="confirm">확인</string>
+    <string name="streak">%1d일째 스트릭 기록중!</string>
 </resources>
