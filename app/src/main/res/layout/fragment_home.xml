@@ -184,8 +184,9 @@
                 android:id="@+id/calendar_left_image_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:background="#ffffff"
-                android:src="@drawable/baseline_arrow_left_24" />
+                android:background="?android:colorBackground"
+                android:src="@drawable/baseline_arrow_left_24"
+                android:layout_margin="1dp"/>
 
             <TextView
                 android:id="@+id/calendar_month_text_view"
@@ -197,8 +198,9 @@
                 android:id="@+id/calendar_right_image_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:background="#ffffff"
-                android:src="@drawable/baseline_arrow_right_24" />
+                android:background="?android:colorBackground"
+                android:src="@drawable/baseline_arrow_right_24"
+                android:layout_margin="1dp"/>
         </LinearLayout>
 
         <LinearLayout

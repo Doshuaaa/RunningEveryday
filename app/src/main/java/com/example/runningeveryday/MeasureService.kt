@@ -183,24 +183,14 @@ class MeasureService : Service(), CoroutineScope{
         val timeData = hashMapOf(
             "time" to currentTime
         )
+
         documentReference.collection(calendar.get(Calendar.DAY_OF_MONTH).toString())
-            .document(targetDistance.toString()).set(timeData)
+            .document(targetDistance.toString()).set(timeData as Map<String, Any>)
 
         val dateData = hashMapOf(
             calendar.get(Calendar.DAY_OF_MONTH).toString() to "ok"
         )
-        documentReference.set(dateData)
-//        documentReference.get().addOnSuccessListener {  task ->
-//
-//            if(task.exists()) {
-//                count = task.get("count") as Int
-//            }
-//        }
-
-
-//        collectionReference
-//            .collection("${calendar.get(Calendar.DAY_OF_MONTH)}")
-//            .document(targetDistance.toString()).set(data)
+        documentReference.update(dateData as Map<String, Any>)
 
     }
 

@@ -1,9 +1,7 @@
 package com.example.runningeveryday
 
 import android.app.Dialog
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.location.Location
@@ -15,9 +13,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.runningeveryday.adapter.MonthAdapter
 import com.example.runningeveryday.databinding.DialogProgressBinding
@@ -34,7 +32,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import java.util.TimeZone
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -69,8 +66,11 @@ class HomeFragment : Fragment() {
     private var viewBinding: FragmentHomeBinding? = null
     val binding: FragmentHomeBinding get() = viewBinding!!
     private lateinit var loadingDialog : LoadingDialog
-    var loadCount = 0
-    var streak = 0
+    private var loadCount = 0
+    private var streak = 0
+    private var calPosition = 11
+    private val calendar = Calendar.getInstance()
+    private val dateFormat = SimpleDateFormat("YYYY년 M월", Locale.KOREA)
     //val loadingDlg = LoadingDialog(requireContext())
 
     private val dlgDismissHandler = Handler(Looper.getMainLooper())
@@ -263,10 +263,57 @@ class HomeFragment : Fragment() {
         val calRecyclerView = binding.calendarRecyclerView
         calRecyclerView.adapter = MonthAdapter(requireContext())
         calRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        calRecyclerView.scrollToPosition(11)
+        calRecyclerView.scrollToPosition(calPosition)
         PagerSnapHelper().attachToRecyclerView(calRecyclerView)
+        setCalendar()
         loadCount++
         dlgDismissHandler.post(runnable)
+
+        binding.calendarLeftImageButton.setOnClickListener{
+            calRecyclerView.scrollToPosition(--calPosition)
+            calendar.add(Calendar.MONTH, -1)
+            setCalendar()
+        }
+
+        binding.calendarRightImageButton.setOnClickListener {
+            calRecyclerView.scrollToPosition(++calPosition)
+            calendar.add(Calendar.MONTH, 1)
+            setCalendar()
+        }
+
+        binding.calendarRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+            var isLeft = false
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if(dx > 0) {
+
+                    isLeft = false
+
+                } else if( dx < 0) {
+
+                    isLeft = true
+                }
+            }
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+                if(newState != RecyclerView.SCROLL_STATE_SETTLING && (calPosition >= 11 || calPosition <= 0)) {
+                    return
+                }
+                if(newState == RecyclerView.SCROLL_STATE_SETTLING && isLeft) {
+                    calendar.add(Calendar.MONTH, -1)
+                    --calPosition
+                    setCalendar()
+                } else if(newState == RecyclerView.SCROLL_STATE_SETTLING){
+                    calendar.add(Calendar.MONTH, 1)
+                    ++calPosition
+                    setCalendar()
+                }
+
+            }
+        })
     }
 
 //    inner class PageSnapReceiver : BroadcastReceiver() {
@@ -279,8 +326,6 @@ class HomeFragment : Fragment() {
 //        }
 //
 //    }
-
-
 
     companion object {
         /**
@@ -362,5 +407,20 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun setCalendar() {
 
+        when (calPosition) {
+            0 -> {
+                binding.calendarLeftImageButton.visibility = View.INVISIBLE
+            }
+            11 -> {
+                binding.calendarRightImageButton.visibility = View.INVISIBLE
+            }
+            else -> {
+                binding.calendarLeftImageButton.visibility = View.VISIBLE
+                binding.calendarRightImageButton.visibility = View.VISIBLE
+            }
+        }
+        binding.calendarMonthTextView.text = dateFormat.format(calendar.time)
+    }
 }

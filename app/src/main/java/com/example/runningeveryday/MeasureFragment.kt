@@ -118,7 +118,7 @@ class MeasureFragment : Fragment() {
         }
         binding.measureStopButton.setOnClickListener {
             sendCommandToForegroundService(MeasureState.STOP)
-            record()
+            //record()
         }
 
         return binding.root
@@ -205,13 +205,14 @@ class MeasureFragment : Fragment() {
         val timeData = hashMapOf(
             "time" to tempTime
         )
+
         documentReference.collection(calendar.get(Calendar.DAY_OF_MONTH).toString())
-            .document(targetDistance.toString()).set(timeData)
+            .document(targetDistance.toString()).set(timeData as Map<String, Any>)
 
         val dateData = hashMapOf(
             calendar.get(Calendar.DAY_OF_MONTH).toString() to "ok"
         )
-        documentReference.set(dateData)
+        documentReference.update(dateData as Map<String, Any>)
 //        documentReference.get().addOnSuccessListener {  task ->
 //
 //            if(task.exists()) {
