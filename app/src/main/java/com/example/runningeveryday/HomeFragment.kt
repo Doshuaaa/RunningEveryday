@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
+import android.icu.util.LocaleData
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
@@ -30,6 +31,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.Calendar
 import java.util.Locale
 
@@ -64,11 +66,15 @@ class HomeFragment : Fragment() {
     private var curPoint: Point? = null
 
     private var viewBinding: FragmentHomeBinding? = null
-    val binding: FragmentHomeBinding get() = viewBinding!!
+    private val binding: FragmentHomeBinding get() = viewBinding!!
     private lateinit var loadingDialog : LoadingDialog
+
     private var loadCount = 0
     private var streak = 0
     private var calPosition = 11
+
+    private val auth = FirebaseAuth.getInstance()
+    private val fireStore = FirebaseFirestore.getInstance()
     private val calendar = Calendar.getInstance()
     private val dateFormat = SimpleDateFormat("YYYY년 M월", Locale.KOREA)
     //val loadingDlg = LoadingDialog(requireContext())
@@ -107,6 +113,7 @@ class HomeFragment : Fragment() {
         setWeather(curPoint!!.x.toString(), curPoint!!.y.toString() )
         initCalendar()
         getCurrentUserProfile()
+
         return binding.root
     }
 
@@ -158,6 +165,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setWeather(rainRatio: String, rainType: String, sky: String, temp: String) {
+
         binding.popTextView.text = getString(R.string.pop, rainRatio)
         var type = ""
         when(rainType) {
@@ -199,14 +207,31 @@ class HomeFragment : Fragment() {
         binding.tempTextView.text = getString(R.string.temp, temp)
         binding.weatherTextView.text = type
 
-        if(rainRatio.toInt() >= 60) {
-            binding.skipRunButton.visibility = View.VISIBLE
-        } else {
-            binding.skipRunButton.visibility = View.GONE
-        }
+        val documentReference = fireStore.collection("users")
+            .document(auth.uid!!).collection("record").document(SimpleDateFormat("YYYYMM", Locale.KOREA).format(calendar.time))
 
-        loadCount++
-        dlgDismissHandler.post(runnable)
+        documentReference.get().addOnSuccessListener { task ->
+
+            if(rainRatio.toInt() >= 60) {
+                if(task.get(calendar.get(Calendar.DAY_OF_MONTH).toString()) == null) {
+                    binding.skipRunButton.visibility = View.VISIBLE
+
+                    binding.skipRunButton.setOnClickListener {
+                        val streakCalendar = Calendar.getInstance()
+
+                        val streakData = hashMapOf(
+                            streakCalendar.get(Calendar.DAY_OF_MONTH).toString() to "streak"
+                        )
+
+                        documentReference.update(streakData as Map<String, Any>)
+                    }
+                }
+            } else {
+                binding.skipRunButton.visibility = View.GONE
+            }
+            loadCount++
+            dlgDismissHandler.post(runnable)
+        }
     }
 
     private fun getTime(time : String) : String{
@@ -299,14 +324,11 @@ class HomeFragment : Fragment() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 
-                if(newState != RecyclerView.SCROLL_STATE_SETTLING && (calPosition >= 11 || calPosition <= 0)) {
-                    return
-                }
-                if(newState == RecyclerView.SCROLL_STATE_SETTLING && isLeft) {
+                if(newState == RecyclerView.SCROLL_STATE_SETTLING && isLeft && calPosition > 0) {
                     calendar.add(Calendar.MONTH, -1)
                     --calPosition
                     setCalendar()
-                } else if(newState == RecyclerView.SCROLL_STATE_SETTLING){
+                } else if(newState == RecyclerView.SCROLL_STATE_SETTLING && !isLeft && calPosition < 11){
                     calendar.add(Calendar.MONTH, 1)
                     ++calPosition
                     setCalendar()
@@ -370,8 +392,6 @@ class HomeFragment : Fragment() {
 
     private fun getStreak() {
 
-        val fireStore = FirebaseFirestore.getInstance()
-        val auth = FirebaseAuth.getInstance()
         val calendar = Calendar.getInstance()
         val dateFormat = SimpleDateFormat("YYYYMM", Locale.KOREA)
 

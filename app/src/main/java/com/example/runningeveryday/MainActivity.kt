@@ -5,14 +5,10 @@ import android.os.Bundle
 import android.Manifest
 import android.app.Dialog
 import android.content.pm.PackageManager
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.example.runningeveryday.databinding.ActivityMainBinding
@@ -25,7 +21,6 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val REQUEST_CODE_PERMISSIONS = 1001
     }
-    private val activity = this
     private var viewBinding: ActivityMainBinding? = null
     private val binding get() = viewBinding!!
 
@@ -45,7 +40,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         checkSex()
         activityResultLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
             if(it.all { permission -> permission.value }) {
@@ -72,6 +66,7 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
+        setFragment(HomeFragment())
     }
 
     private fun setFragment(fragment: Fragment) {
