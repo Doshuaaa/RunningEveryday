@@ -11,7 +11,8 @@ import androidx.core.app.NotificationCompat
 private const val CHANNEL_ID = "Channel"
 private const val CHANNEL_NAME = "ChannelName"
 
-class NotificationHelper(context: Context) {
+class NotificationHelper(context: Context, private var targetDistance: Float) {
+
 
     companion object {
         const val NOTIFICATION_ID = 99
@@ -22,6 +23,7 @@ class NotificationHelper(context: Context) {
         PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
     }
+
 
     private val notificationBuilder: Notification.Builder by lazy {
         Notification.Builder(context, CHANNEL_ID)
@@ -38,21 +40,31 @@ class NotificationHelper(context: Context) {
     }
 
     private fun createChannel() : NotificationChannel {
+
         return NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT).apply {
             //vibrationPattern = longArrayOf(0)
         }
     }
 
-    fun updateNotification(curDistance: Float, targetDistance: Float, curTime: Int) {
+    fun updateNotification(curDistance: Float, curTime: Int) {
+
         notificationBuilder.setContentText("시간: ${curTime / 60} : ${curTime % 60}\n  거리: ${String.format("%.2f", curDistance / 1000.0)} / ${targetDistance}")
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
     }
 
-    fun completeNotification(targetDistance: Float, curTime: Int) {
+    fun completeNotification(curTime: Int) {
         notificationBuilder.setContentText("${targetDistance}m 측정 완료!  <걸린 시간: ${curTime / 60} : ${curTime % 60}>")
     }
 
     fun notificationCancel() {
         notificationManager.cancel(NOTIFICATION_ID)
+    }
+
+    fun getTargetDistance() : Float{
+        return targetDistance
+    }
+
+    fun setTargetDistance(targetDistance: Float) {
+        this.targetDistance = targetDistance
     }
 }

@@ -77,6 +77,7 @@ class HomeFragment : Fragment() {
     private val fireStore = FirebaseFirestore.getInstance()
     private val calendar = Calendar.getInstance()
     private val dateFormat = SimpleDateFormat("YYYY년 M월", Locale.KOREA)
+    private val calRecyclerView by lazy { binding.calendarRecyclerView }
     //val loadingDlg = LoadingDialog(requireContext())
 
     private val dlgDismissHandler = Handler(Looper.getMainLooper())
@@ -214,9 +215,15 @@ class HomeFragment : Fragment() {
 
             if(rainRatio.toInt() >= 60) {
                 if(task.get(calendar.get(Calendar.DAY_OF_MONTH).toString()) == null) {
+
                     binding.skipRunButton.visibility = View.VISIBLE
 
                     binding.skipRunButton.setOnClickListener {
+
+                        loadingDialog.show()
+
+                        binding.skipRunButton.visibility = View.GONE
+
                         val streakCalendar = Calendar.getInstance()
 
                         val streakData = hashMapOf(
@@ -224,6 +231,9 @@ class HomeFragment : Fragment() {
                         )
 
                         documentReference.update(streakData as Map<String, Any>)
+                        --loadCount
+                        calRecyclerView.onFlingListener = null
+                        initCalendar()
                     }
                 }
             } else {
@@ -285,7 +295,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun initCalendar() {
-        val calRecyclerView = binding.calendarRecyclerView
+
         calRecyclerView.adapter = MonthAdapter(requireContext())
         calRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         calRecyclerView.scrollToPosition(calPosition)

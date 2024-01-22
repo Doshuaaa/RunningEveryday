@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var activityResultLauncher: ActivityResultLauncher<Array<String>>
 
-    val fireStore = FirebaseFirestore.getInstance()
+    private val fireStore = FirebaseFirestore.getInstance()
     val sexDocRef = fireStore.collection("users").document(FirebaseAuth.getInstance().uid.toString())
     .collection("information").document("sex")
 

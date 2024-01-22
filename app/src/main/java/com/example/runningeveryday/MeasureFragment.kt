@@ -26,6 +26,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 // TODO: Rename parameter arguments, choose names that match
@@ -95,7 +96,20 @@ class MeasureFragment : Fragment() {
 
         }
 
+        when(MeasureService.targetDistance) {
+            1500f ->  {
+                binding.distanceSpinner.setSelection(0)
+                binding.distanceSpinner.isEnabled = false
+            }
+            3000f -> {
+                binding.distanceSpinner.setSelection(1)
+                binding.distanceSpinner.isEnabled = false
+            }
+        }
+
         binding.measureStartButton.setOnClickListener {
+
+            binding.distanceSpinner.isEnabled = false
 
             if(ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -117,8 +131,9 @@ class MeasureFragment : Fragment() {
 
         }
         binding.measureStopButton.setOnClickListener {
+            binding.distanceSpinner.isEnabled = true
             sendCommandToForegroundService(MeasureState.STOP)
-            //record()
+            record()
         }
 
         return binding.root
@@ -128,6 +143,7 @@ class MeasureFragment : Fragment() {
         super.onResume()
         if(!mainViewModel.isReceiverRegistered) {
             context?.registerReceiver(measureReceiver, IntentFilter(TIMER_ACTION), Context.RECEIVER_EXPORTED)
+            context?.registerReceiver(measureReceiver, IntentFilter(DISTANCE_ACTION), Context.RECEIVER_EXPORTED)
             mainViewModel.isReceiverRegistered = true
         }
     }
@@ -161,7 +177,7 @@ class MeasureFragment : Fragment() {
     }
 
     private fun updateTimeUi(time: Int) {
-        binding.timeTextView.text = "$time"
+        binding.timeTextView.text = timeFormat(time)
         //sendCommandToForegroundService(TimerState.STOP)
     }
 
@@ -181,11 +197,19 @@ class MeasureFragment : Fragment() {
                 val time = intent.getIntExtra(NOTIFICATION_TIME, 0)
                 tempTime = time
                 updateTimeUi(time)
-            } else if (intent.action == DISTANCE_ACTION) {
+            }
+            else if (intent.action == DISTANCE_ACTION) {
                 val distance = intent.getFloatExtra(NOTIFICATION_DISTANCE, 0f)
                 updateDistanceUi(distance)
             }
         }
+    }
+
+    private fun timeFormat(time: Int) : String{
+
+        val minute = time / 60
+        val second = time % 60
+        return String.format(Locale.KOREA, "%02d : %02d", minute, second)
     }
     ///////
     private fun record() {
@@ -199,9 +223,31 @@ class MeasureFragment : Fragment() {
             fireStore.collection("users").document(auth.uid!!)
                 .collection("record")
                 .document(SimpleDateFormat("YYYYMM", Locale.KOREA).format(calendar.time).toString())
+////// 추가될 내용
+        val collectionReference =
+            fireStore.collection("users").document(auth.uid!!)
+                .collection("top10")
 
 
+        collectionReference.document(targetDistance.toString()).get().addOnSuccessListener { task ->
 
+            val data = hashMapOf(
+                "1" to 2
+            )
+            data.entries.sortedBy { it.value }
+            if(task.exists()) {
+                val top10List =
+                    task?.data?.toList()?.sortedByDescending { it.second as Long }
+                val a = 3
+            }
+            else {
+                val data = hashMapOf(
+                    SimpleDateFormat("yyyy년 MM월 dd일", Locale.KOREA).toString() to tempTime
+                )
+            }
+        }
+
+        //////
         val timeData = hashMapOf(
             "time" to tempTime
         )
@@ -213,6 +259,8 @@ class MeasureFragment : Fragment() {
             calendar.get(Calendar.DAY_OF_MONTH).toString() to "ok"
         )
         documentReference.update(dateData as Map<String, Any>)
+
+        documentReference
 //        documentReference.get().addOnSuccessListener {  task ->
 //
 //            if(task.exists()) {

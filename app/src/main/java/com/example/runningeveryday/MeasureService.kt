@@ -33,9 +33,12 @@ const val NOTIFICATION_DISTANCE = "NotificationDistance"
 class MeasureService : Service(), CoroutineScope{
 
     private var serviceState: MeasureState = MeasureState.INITIALIZED
-    private val helper: NotificationHelper by lazy {  NotificationHelper(this) }
+    private val helper: NotificationHelper by lazy {  NotificationHelper(this, targetDistance) }
 
-    private var targetDistance = 0f
+    companion object {
+        var targetDistance = 0f
+    }
+
     private var currentTime = 0
     private var totalDistance = 0f
 
@@ -43,11 +46,11 @@ class MeasureService : Service(), CoroutineScope{
     private val auth = FirebaseAuth.getInstance()
     private val fireStore = FirebaseFirestore.getInstance()
 
-    private val collectionReference =
-        fireStore.collection("users").document(auth.uid!!)
-        .collection("record")
-        .document("${calendar.get(Calendar.YEAR)}${calendar.get((Calendar.MONTH))}")
-        .collection(targetDistance.toString())
+//    private val collectionReference =
+//        fireStore.collection("users").document(auth.uid!!)
+//        .collection("record")
+//        .document("${calendar.get(Calendar.YEAR)}${calendar.get((Calendar.MONTH))}")
+//        .collection(targetDistance.toString())
 
     private val locationManager by lazy { getSystemService(Context.LOCATION_SERVICE) as LocationManager}
     private var lastLocation: Location? = null
@@ -72,11 +75,12 @@ class MeasureService : Service(), CoroutineScope{
             }
             lastLocation = location
 
+            broadcastDistanceUpdate()
             if(totalDistance >= targetDistance) {
 
                 record()
                 measureStop()
-                helper.completeNotification(targetDistance, currentTime)
+                helper.completeNotification(currentTime)
             }
         }
     }
@@ -119,7 +123,7 @@ class MeasureService : Service(), CoroutineScope{
 
     private fun measureStart() {
         serviceState = MeasureState.START
-
+        helper.setTargetDistance(targetDistance)
         startForeground(NotificationHelper.NOTIFICATION_ID, helper.getNotification())
         broadcastTimeUpdate()
 
@@ -137,6 +141,7 @@ class MeasureService : Service(), CoroutineScope{
 
     private fun measureStop() {
         serviceState = MeasureState.STOP
+        targetDistance = 0f
         broadcastTimeUpdate()
         broadcastDistanceUpdate()
         handler.removeCallbacks(runnable)
@@ -149,7 +154,7 @@ class MeasureService : Service(), CoroutineScope{
     private fun broadcastTimeUpdate() {
         if(serviceState == MeasureState.START) {
             sendBroadcast(Intent(TIMER_ACTION).putExtra(NOTIFICATION_TIME, currentTime))
-            helper.updateNotification(totalDistance, targetDistance, currentTime)
+            helper.updateNotification(totalDistance, currentTime)
         }
         else {
             sendBroadcast(Intent(TIMER_ACTION).putExtra(NOTIFICATION_TIME, 0))
@@ -159,10 +164,10 @@ class MeasureService : Service(), CoroutineScope{
 
     private fun broadcastDistanceUpdate() {
         if(serviceState == MeasureState.START) {
-            sendBroadcast(Intent(DISTANCE_ACTION).putExtra(NOTIFICATION_DISTANCE, currentTime))
+            sendBroadcast(Intent(DISTANCE_ACTION).putExtra(NOTIFICATION_DISTANCE, totalDistance))
         }
         else {
-            sendBroadcast(Intent(DISTANCE_ACTION).putExtra(NOTIFICATION_DISTANCE, 0))
+            sendBroadcast(Intent(DISTANCE_ACTION).putExtra(NOTIFICATION_DISTANCE, 0f))
             helper.notificationCancel()
         }
     }
