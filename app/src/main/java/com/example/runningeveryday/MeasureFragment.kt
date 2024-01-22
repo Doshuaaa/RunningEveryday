@@ -224,26 +224,33 @@ class MeasureFragment : Fragment() {
                 .collection("record")
                 .document(SimpleDateFormat("YYYYMM", Locale.KOREA).format(calendar.time).toString())
 ////// 추가될 내용
-        val collectionReference =
+        val top10Reference =
             fireStore.collection("users").document(auth.uid!!)
-                .collection("top10")
+                .collection("top10").document(targetDistance.toString())
 
 
-        collectionReference.document(targetDistance.toString()).get().addOnSuccessListener { task ->
+        top10Reference.get().addOnSuccessListener { task ->
 
-            val data = hashMapOf(
-                "1" to 2
-            )
-            data.entries.sortedBy { it.value }
-            if(task.exists()) {
-                val top10List =
-                    task?.data?.toList()?.sortedByDescending { it.second as Long }
-                val a = 3
+            val top10List =
+                task?.data?.entries?.sortedByDescending { it.value as Long }?.toMutableList()!!
+
+            val timeFormat = SimpleDateFormat("yyyy년 M월 dd일", Locale.KOREA)
+
+            if(top10List.size in 0..9) {
+                top10Reference.update(
+                    hashMapOf(
+                        timeFormat.format(calendar.time).toString() to tempTime
+                    ) as Map<String, Any>
+                )
+
             }
             else {
-                val data = hashMapOf(
-                    SimpleDateFormat("yyyy년 MM월 dd일", Locale.KOREA).toString() to tempTime
-                )
+                if (tempTime.toLong() < top10List[0].value as Long) {
+                    top10List.removeAt(0)
+                    val map = top10List.associate { it.key to it.value }.toMutableMap()
+                    map[timeFormat.format(calendar.time).toString()] = tempTime
+                    top10Reference.set(map)
+                }
             }
         }
 
@@ -260,7 +267,7 @@ class MeasureFragment : Fragment() {
         )
         documentReference.update(dateData as Map<String, Any>)
 
-        documentReference
+
 //        documentReference.get().addOnSuccessListener {  task ->
 //
 //            if(task.exists()) {
