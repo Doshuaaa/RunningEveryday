@@ -183,8 +183,6 @@ class MeasureService : Service(), CoroutineScope{
                 .collection("record")
                 .document(SimpleDateFormat("YYYYMM", Locale.KOREA).format(calendar.time).toString())
 
-
-
         val timeData = hashMapOf(
             "time" to currentTime
         )
@@ -196,6 +194,37 @@ class MeasureService : Service(), CoroutineScope{
             calendar.get(Calendar.DAY_OF_MONTH).toString() to "ok"
         )
         documentReference.update(dateData as Map<String, Any>)
+
+
+        val top10Reference =
+            fireStore.collection("users").document(auth.uid!!)
+                .collection("top10").document(targetDistance.toString())
+
+
+        top10Reference.get().addOnSuccessListener { task ->
+
+            val top10List =
+                task?.data?.entries?.sortedByDescending { it.value as Long }?.toMutableList()!!
+
+            val timeFormat = SimpleDateFormat("yyyy년 M월 dd일", Locale.KOREA)
+
+
+            if(top10List.size in 0..9) {
+                top10Reference.update(
+                    hashMapOf(
+                        timeFormat.format(calendar.time).toString() to currentTime
+                    ) as Map<String, Any>
+                )
+            }
+            else {
+                if (currentTime < top10List[0].value as Long) {
+                    top10List.removeAt(0)
+                    val map = top10List.associate { it.key to it.value }.toMutableMap()
+                    map[timeFormat.format(calendar.time).toString()] = currentTime
+                    top10Reference.set(map)
+                }
+            }
+        }
 
     }
 

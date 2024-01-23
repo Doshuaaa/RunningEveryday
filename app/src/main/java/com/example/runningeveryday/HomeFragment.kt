@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide
 import com.example.runningeveryday.adapter.MonthAdapter
 import com.example.runningeveryday.databinding.DialogProgressBinding
 import com.example.runningeveryday.databinding.FragmentHomeBinding
+import com.example.runningeveryday.dialog.LoadingDialog
 import com.example.runningeveryday.model.Weather
 import com.example.runningeverytime.api.WeatherApi
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -379,19 +380,19 @@ class HomeFragment : Fragment() {
             }
     }
 
-    inner class LoadingDialog(private val context: Context) : Dialog(context) {
-
-        private var viewBinding: DialogProgressBinding? = null
-        private val binding get() = viewBinding!!
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            viewBinding = DialogProgressBinding.inflate(layoutInflater)
-            Glide.with(context).load(R.raw.load_32_128).into(binding.loadingImageView)
-            setContentView(binding.root)
-            setCancelable(false)
-            window?.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
-        }
-    }
+//    inner class LoadingDialog(private val context: Context) : Dialog(context) {
+//
+//        private var viewBinding: DialogProgressBinding? = null
+//        private val binding get() = viewBinding!!
+//        override fun onCreate(savedInstanceState: Bundle?) {
+//            super.onCreate(savedInstanceState)
+//            viewBinding = DialogProgressBinding.inflate(layoutInflater)
+//            Glide.with(context).load(R.raw.load_32_128).into(binding.loadingImageView)
+//            setContentView(binding.root)
+//            setCancelable(false)
+//            window?.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
+//        }
+//    }
 
     private fun getCurrentUserProfile() {
         val curUser = GoogleSignIn.getLastSignedInAccount(requireContext())

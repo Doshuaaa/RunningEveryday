@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             statsButton.setOnClickListener{
-
+                setFragment(StatsFragment())
             }
         }
         setFragment(HomeFragment())

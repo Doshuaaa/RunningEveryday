@@ -5,7 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.example.runningeveryday.databinding.FragmentStatsBinding
+import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -39,8 +45,49 @@ class StatsFragment : Fragment() {
     ): View {
 
         viewBinding = FragmentStatsBinding.inflate(layoutInflater)
+        initViewPager()
         return binding.root
     }
+
+    private fun initViewPager() {
+        val viewPager2Adapter = object : FragmentStateAdapter(this) {
+            val fragmentList: ArrayList<Fragment> = ArrayList()
+
+            override fun getItemCount(): Int {
+                return fragmentList.size
+            }
+
+            override fun createFragment(position: Int): Fragment {
+                return fragmentList[position]
+            }
+
+            fun addFragment(fragment: Fragment) {
+                fragmentList.add(fragment)
+                notifyItemInserted(fragmentList.size - 1)
+            }
+        }
+
+        viewPager2Adapter.addFragment(Stats1500Fragment())
+        viewPager2Adapter.addFragment(Stats3000Fragment())
+
+        binding.statsViewPager2.apply {
+            adapter = viewPager2Adapter
+
+//            registerOnPageChangeCallback(object : OnPageChangeCallback() {
+//                override fun onPageSelected(position: Int) {
+//                    super.onPageSelected(position)
+//                }
+//            })
+        }
+
+        TabLayoutMediator(binding.statsTabLayout, binding.statsViewPager2) {tab, position ->
+            when(position) {
+                0 -> tab.text = "1.5 km"
+                1 -> tab.text = "3.0 km"
+            }
+        }.attach()
+    }
+
 
     companion object {
         /**

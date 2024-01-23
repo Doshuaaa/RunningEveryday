@@ -133,7 +133,7 @@ class MeasureFragment : Fragment() {
         binding.measureStopButton.setOnClickListener {
             binding.distanceSpinner.isEnabled = true
             sendCommandToForegroundService(MeasureState.STOP)
-            record()
+            //record()
         }
 
         return binding.root
@@ -242,10 +242,9 @@ class MeasureFragment : Fragment() {
                         timeFormat.format(calendar.time).toString() to tempTime
                     ) as Map<String, Any>
                 )
-
             }
             else {
-                if (tempTime.toLong() < top10List[0].value as Long) {
+                if (tempTime < top10List[0].value as Long) {
                     top10List.removeAt(0)
                     val map = top10List.associate { it.key to it.value }.toMutableMap()
                     map[timeFormat.format(calendar.time).toString()] = tempTime
