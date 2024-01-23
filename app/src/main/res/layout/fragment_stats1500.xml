@@ -82,7 +82,7 @@
             android:layout_margin="20dp"/>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/top10_1500_recycler_view"
+            android:id="@+id/top10_of_1500_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 

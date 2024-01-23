@@ -5,8 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.runningeveryday.adapter.RecordAdapter
 import com.example.runningeveryday.databinding.FragmentStats1500Binding
-import com.example.runningeveryday.dialog.LoadingDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Locale
@@ -59,8 +59,8 @@ class Stats1500Fragment : Fragment() {
             .collection("top10").document("1500")
 
         top10Reference.get().addOnSuccessListener {snapShot ->
-            top10List = snapShot.data?.toList()!!
-            top10List.sortedBy { it.second as Long }
+            val list = snapShot.data?.toList()!!
+            top10List = list.sortedBy { it.second as Long }
             setView()
         }
     }
@@ -68,6 +68,9 @@ class Stats1500Fragment : Fragment() {
     private fun setView() {
         binding.dateTextView.text = top10List[0].first
         binding.timeTextView.text = String.format(Locale.KOREA, "%02d : %02d", (top10List[0].second as Long / 60), (top10List[0].second as Long % 60))
+        binding.top10Of1500RecyclerView.apply {
+            adapter = RecordAdapter(top10List)
+        }
     }
 
     companion object {

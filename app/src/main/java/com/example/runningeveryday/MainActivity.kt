@@ -3,8 +3,13 @@ package com.example.runningeveryday
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.Manifest
+import android.app.ActionBar.LayoutParams
 import android.app.Dialog
+import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Point
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,9 +17,10 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.example.runningeveryday.databinding.ActivityMainBinding
-import com.example.runningeveryday.databinding.DialogSexBinding
+import com.example.runningeveryday.databinding.DialogInformationBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,14 +39,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var activityResultLauncher: ActivityResultLauncher<Array<String>>
 
     private val fireStore = FirebaseFirestore.getInstance()
-    val sexDocRef = fireStore.collection("users").document(FirebaseAuth.getInstance().uid.toString())
-    .collection("information").document("sex")
+    val informationRef = fireStore.collection("users").document(FirebaseAuth.getInstance().uid.toString())
+    .collection("information")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        checkSex()
+        checkRegisterInformation()
         activityResultLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
             if(it.all { permission -> permission.value }) {
 
@@ -101,23 +107,34 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkSex() {
-        sexDocRef.get().addOnSuccessListener { task ->
+    private fun checkRegisterInformation() {
+        informationRef.document("information").get().addOnSuccessListener { task ->
                 if(!task.exists()) {
-                    SexDialog().show()
+                    InformationDialog().show()
                 }
             }
     }
 
-    inner class SexDialog : Dialog(this) {
+    inner class InformationDialog : Dialog(this) {
 
-        private var viewBinding: DialogSexBinding? = null
+        private var viewBinding: DialogInformationBinding? = null
         private val binding get() = viewBinding!!
+        private val calendar = Calendar.getInstance()
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
-            viewBinding = DialogSexBinding.inflate(layoutInflater)
+
+            this.window?.setBackgroundDrawableResource(R.drawable.round_dialog)
+
+            viewBinding = DialogInformationBinding.inflate(layoutInflater)
             setContentView(binding.root)
+
+            binding.yearOfBirthNumberPicker.apply {
+                maxValue = calendar.get(Calendar.YEAR) - 10
+                minValue = calendar.get(Calendar.YEAR) - 20
+                minValue = calendar.get(Calendar.YEAR) - 100
+                wrapSelectorWheel = false
+            }
 
             setCancelable(false)
 
@@ -127,10 +144,13 @@ class MainActivity : AppCompatActivity() {
                     R.id.man_radio_button -> sex = "남"
                     R.id.woman_radio_button -> sex = "여"
                 }
-                val sexData = hashMapOf(
-                    "sex" to sex
+                val informationData : HashMap<String, Any> = hashMapOf(
+                    "sex" to sex,
+                    "age" to calendar.get(Calendar.YEAR) - binding.yearOfBirthNumberPicker.value
+
                 )
-                sexDocRef.set(sexData)
+                informationRef.document("information").set(informationData)
+
                 dismiss()
             }
         }

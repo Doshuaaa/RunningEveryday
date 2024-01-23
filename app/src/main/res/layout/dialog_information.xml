@@ -8,7 +8,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/plz_select_sex_text_view"
-        android:layout_margin="20dp"/>
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -21,7 +22,9 @@
         android:id="@+id/sex_radio_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:checkedButton="@id/man_radio_button">
 
         <RadioButton
             android:id="@+id/man_radio_button"
@@ -38,11 +41,26 @@
             android:layout_margin="10dp"/>
     </RadioGroup>
 
+    <TextView
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:text="② 출생년도를 골라주세요"
+        android:layout_marginTop="20dp"
+        android:gravity="center"/>
+
+    <NumberPicker
+        android:layout_margin="10dp"
+        android:id="@+id/year_of_birth_number_picker"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/sex_confirm_button"
-        android:layout_marginTop="10dp"
+        android:layout_margin="10dp"
         android:layout_gravity="end"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
         android:text="@string/confirm"/>
 </LinearLayout>
