@@ -5,6 +5,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.runningeveryday.adapter.RecordAdapter
+import com.example.runningeveryday.databinding.FragmentStats3000Binding
+import com.example.runningeveryday.dialog.LoadingDialog
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import java.util.Locale
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -21,6 +29,11 @@ class Stats3000Fragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private var viewBinding: FragmentStats3000Binding? = null
+    private val binding get() = viewBinding!!
+    private lateinit var top10List  : List<Pair<String, Any>>
+    private lateinit var loadingDialog: LoadingDialog
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -32,9 +45,91 @@ class Stats3000Fragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_stats3000, container, false)
+    ): View {
+        viewBinding = FragmentStats3000Binding.inflate(layoutInflater)
+        loadingDialog = LoadingDialog(requireContext())
+        loadingDialog.show()
+        setTop10List()
+        return binding.root
+    }
+
+    private fun setTop10List() {
+
+        val fireStore = FirebaseFirestore.getInstance()
+        val top10Reference = fireStore.collection("users")
+            .document(FirebaseAuth.getInstance().uid!!)
+            .collection("top10").document("3000")
+
+        top10Reference.get().addOnSuccessListener {snapShot ->
+            val list = snapShot.data?.toList()!!
+            top10List = list.sortedBy { it.second as Long }
+            setView()
+        }
+    }
+
+    private fun setView() {
+        try {
+            binding.notExistDataLinearLayout.visibility = View.GONE
+            binding.existDataLinearLayout.visibility = View.VISIBLE
+
+            when (Record().getGrade(
+                MainActivity.sex,
+                MainActivity.age,
+                3000,
+                top10List[0].second as Long
+            )) {
+
+                0 -> {
+                    binding.gradeImageView.setImageResource(R.drawable.diamond)
+                    binding.gradeTextView.text = "특급"
+                }
+
+                1 ->  {
+                    binding.gradeImageView.setImageResource(R.drawable.first)
+                    binding.gradeTextView.text = "1급"
+                }
+
+                2 -> {
+                    binding.gradeImageView.setImageResource(R.drawable.second)
+                    binding.gradeTextView.text = "2급"
+                }
+
+                3 -> {
+                    binding.gradeImageView.setImageResource(R.drawable.third)
+                    binding.gradeTextView.text = "3급"
+                }
+
+                4 -> {
+                    binding.gradeImageView.setImageResource(R.drawable.ore)
+                    binding.gradeTextView.text = "노력이 필요해"
+                }
+
+            }
+
+            binding.dateTextView.text = top10List[0].first
+            binding.timeTextView.text = String.format(
+                Locale.KOREA,
+                "%02d : %02d",
+                (top10List[0].second as Long / 60),
+                (top10List[0].second as Long % 60)
+            )
+
+            val decoration = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+            binding.top10Of1500RecyclerView.apply {
+                adapter = RecordAdapter(top10List, 3000)
+                layoutManager = LinearLayoutManager(requireContext())
+                addItemDecoration(decoration)
+            }
+        } catch (e: UninitializedPropertyAccessException) {
+            binding.notExistDataLinearLayout.visibility = View.VISIBLE
+            binding.existDataLinearLayout.visibility = View.GONE
+
+            binding.goToMeasureButton.setOnClickListener {
+
+                MainActivity.setFragment(MeasureFragment())
+            }
+        }
+        loadingDialog.dismiss()
     }
 
     companion object {

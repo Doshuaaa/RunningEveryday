@@ -15,6 +15,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import com.example.runningeveryday.databinding.ActivityMainBinding
 import com.example.runningeveryday.databinding.DialogInformationBinding
@@ -26,7 +27,19 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val REQUEST_CODE_PERMISSIONS = 1001
+        lateinit var sex: String
+        var age = 0L
+
+        private lateinit var supportManager: FragmentManager
+        fun setFragment(fragment: Fragment) {
+
+            supportManager.commit {
+                replace(R.id.main_frame_layout, fragment)
+                // setReorderingAllowed(true)
+            }
+        }
     }
+
     private var viewBinding: ActivityMainBinding? = null
     private val binding get() = viewBinding!!
 
@@ -45,6 +58,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
+        supportManager = supportFragmentManager
         setContentView(binding.root)
         checkRegisterInformation()
         activityResultLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
@@ -75,14 +89,7 @@ class MainActivity : AppCompatActivity() {
         setFragment(HomeFragment())
     }
 
-    private fun setFragment(fragment: Fragment) {
 
-        supportFragmentManager.commit {
-            replace(R.id.main_frame_layout, fragment)
-            // setReorderingAllowed(true)
-            addToBackStack("")
-        }
-    }
 
     private fun checkLocationPermission(permissions: Array<String>) : Boolean {
         return permissions.all {
@@ -111,6 +118,9 @@ class MainActivity : AppCompatActivity() {
         informationRef.document("information").get().addOnSuccessListener { task ->
                 if(!task.exists()) {
                     InformationDialog().show()
+                } else {
+                    age = task.get("age") as Long
+                    sex = task.get("sex") as String
                 }
             }
     }

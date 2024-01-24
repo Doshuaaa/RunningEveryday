@@ -78,7 +78,6 @@ class HomeFragment : Fragment() {
     private val fireStore = FirebaseFirestore.getInstance()
     private val calendar = Calendar.getInstance()
     private val dateFormat = SimpleDateFormat("YYYY년 M월", Locale.KOREA)
-    private val calRecyclerView by lazy { binding.calendarRecyclerView }
     //val loadingDlg = LoadingDialog(requireContext())
 
     private val dlgDismissHandler = Handler(Looper.getMainLooper())
@@ -87,6 +86,9 @@ class HomeFragment : Fragment() {
             loadingDialog.dismiss()
         }
     }
+
+    private val calRecyclerView by lazy { binding.calendarRecyclerView }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -378,6 +380,7 @@ class HomeFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+
     }
 
 //    inner class LoadingDialog(private val context: Context) : Dialog(context) {

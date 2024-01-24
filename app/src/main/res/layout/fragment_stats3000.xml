@@ -1,14 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Stats3000Fragment">
+    tools:context=".StatsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
+        android:id="@+id/not_exist_data_linear_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="기록된 달리기가 없어요"
+            android:textSize="24sp"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/go_to_measure_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="기록 측정하러 가기"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/exist_data_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".StatsFragment"
+        android:orientation="vertical"
+        android:weightSum="3">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:padding="15dp">
+
+            <TextView
+                android:id="@+id/my_career_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="나의 커리어하이"
+                android:layout_marginBottom="20dp"
+                android:textSize="24sp"/>
+
+
+            <ImageView
+                android:id="@+id/grade_image_view"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_below="@id/my_career_text_view"
+                android:layout_centerInParent="true"
+                android:src="@drawable/first" />
+
+            <TextView
+                android:id="@+id/grade_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/grade_image_view"
+                android:text="1급"
+                android:layout_centerHorizontal="true"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/grade_text_view"
+                android:layout_marginTop="12dp"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/date_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2022년 1월 14일"
+                    android:layout_marginEnd="15dp"
+                    android:textSize="18sp"/>
+
+                <TextView
+                    android:id="@+id/time_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="15분 31초"
+                    android:layout_marginStart="15dp"
+                    android:textSize="18sp"/>
+            </LinearLayout>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#2E2D2D"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Top 10 기록"
+                android:textSize="24sp"
+                android:layout_margin="20dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/top10_of_1500_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+    </LinearLayout>
 
 </FrameLayout>
