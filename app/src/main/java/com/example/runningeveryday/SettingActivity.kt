@@ -27,6 +27,13 @@ class SettingActivity : AppCompatActivity() {
     private val googleAccount by lazy { GoogleSignIn.getLastSignedInAccount(this) }
     private val informationDocRef by lazy{ FirebaseFirestore.getInstance().collection("users")
         .document(firebaseAuth.uid!!).collection("information").document("information")}
+    private val fireStore = FirebaseFirestore.getInstance()
+
+    private val deleteRefList = listOf(
+        fireStore.collection("users").document(firebaseAuth.uid!!).collection("information"),
+        fireStore.collection("users").document(firebaseAuth.uid!!).collection("record"),
+        fireStore.collection("users").document(firebaseAuth.uid!!).collection("top10")
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -159,14 +166,23 @@ class SettingActivity : AppCompatActivity() {
                 val a  = withdrawalBinding.withdrawalEditText.text
                 if(withdrawalBinding.withdrawalEditText.text.toString() == "계정탈퇴") {
 
-                    FirebaseFirestore.getInstance().collection("users").document(firebaseAuth.uid!!).delete().addOnCompleteListener {
-                        if(it.isSuccessful) {
-                            firebaseAuth.currentUser?.delete()
-                            MainActivity.mainActivity?.finish()
-                            dismiss()
-                            finish()
-                            val intent = Intent(context, LoginActivity::class.java)
-                            startActivity(intent)
+                    for(reference in deleteRefList) {
+                        reference.get().addOnSuccessListener {
+                            for (document in it.documents) {
+                                reference.document(document.id).delete()
+                            }
+                        }
+                    }
+
+                    fireStore.collection("users").document(firebaseAuth.uid!!).delete().addOnSuccessListener {
+                        firebaseAuth.currentUser?.delete()?.addOnCompleteListener {
+                            if(it.isSuccessful) {
+                                MainActivity.mainActivity?.finish()
+                                dismiss()
+                                finish()
+                                val intent = Intent(context, LoginActivity::class.java)
+                                startActivity(intent)
+                            }
                         }
                     }
                 } else {

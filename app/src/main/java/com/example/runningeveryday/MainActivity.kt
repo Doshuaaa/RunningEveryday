@@ -3,13 +3,8 @@ package com.example.runningeveryday
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.Manifest
-import android.app.ActionBar.LayoutParams
 import android.app.Dialog
-import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Point
-import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -61,6 +56,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         supportManager = supportFragmentManager
+
         setContentView(binding.root)
         mainActivity = this
         checkRegisterInformation()
@@ -152,16 +148,18 @@ class MainActivity : AppCompatActivity() {
             setCancelable(false)
 
             binding.sexConfirmButton.setOnClickListener {
-                var sex = ""
+                var inputSex = ""
+                val inputAge = calendar.get(Calendar.YEAR) - binding.yearOfBirthNumberPicker.value
                 when(binding.sexRadioGroup.checkedRadioButtonId) {
-                    R.id.man_radio_button -> sex = "남"
-                    R.id.woman_radio_button -> sex = "여"
+                    R.id.man_radio_button -> inputSex = "남"
+                    R.id.woman_radio_button -> inputSex = "여"
                 }
                 val informationData : HashMap<String, Any> = hashMapOf(
-                    "sex" to sex,
-                    "age" to calendar.get(Calendar.YEAR) - binding.yearOfBirthNumberPicker.value
-
+                    "sex" to inputSex,
+                    "age" to inputAge
                 )
+                sex = inputSex
+                age = inputAge.toLong()
                 informationRef.document("information").set(informationData)
 
                 dismiss()
