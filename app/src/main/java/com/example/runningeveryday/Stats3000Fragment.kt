@@ -61,8 +61,10 @@ class Stats3000Fragment : Fragment() {
             .collection("top10").document("3000")
 
         top10Reference.get().addOnSuccessListener {snapShot ->
-            val list = snapShot.data?.toList()!!
-            top10List = list.sortedBy { it.second as Long }
+            if(snapShot.data != null) {
+                val list = snapShot.data?.toList()!!
+                top10List = list.sortedBy { it.second as Long }
+            }
             setView()
         }
     }

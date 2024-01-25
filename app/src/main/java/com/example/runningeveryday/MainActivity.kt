@@ -26,6 +26,8 @@ import java.util.Calendar
 class MainActivity : AppCompatActivity() {
 
     companion object {
+        var mainActivity: MainActivity? = null
+
         const val REQUEST_CODE_PERMISSIONS = 1001
         lateinit var sex: String
         var age = 0L
@@ -60,6 +62,7 @@ class MainActivity : AppCompatActivity() {
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         supportManager = supportFragmentManager
         setContentView(binding.root)
+        mainActivity = this
         checkRegisterInformation()
         activityResultLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
             if(it.all { permission -> permission.value }) {

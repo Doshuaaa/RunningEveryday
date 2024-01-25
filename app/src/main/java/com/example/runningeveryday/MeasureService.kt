@@ -3,6 +3,7 @@ package com.example.runningeveryday
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -124,7 +125,7 @@ class MeasureService : Service(), CoroutineScope{
     private fun measureStart() {
         serviceState = MeasureState.START
         helper.setTargetDistance(targetDistance)
-        startForeground(NotificationHelper.NOTIFICATION_ID, helper.getNotification())
+        startForeground(NotificationHelper.NOTIFICATION_ID, helper.getNotification(), FOREGROUND_SERVICE_TYPE_LOCATION)
         broadcastTimeUpdate()
 
         try {

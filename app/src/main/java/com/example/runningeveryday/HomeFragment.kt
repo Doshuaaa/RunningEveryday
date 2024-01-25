@@ -2,6 +2,7 @@ package com.example.runningeveryday
 
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.icu.util.LocaleData
@@ -117,6 +118,11 @@ class HomeFragment : Fragment() {
         setWeather(curPoint!!.x.toString(), curPoint!!.y.toString() )
         initCalendar()
         getCurrentUserProfile()
+
+        binding.settingImageButton.setOnClickListener {
+            val intent = Intent(requireContext(), SettingActivity::class.java)
+            startActivity(intent)
+        }
 
         return binding.root
     }
