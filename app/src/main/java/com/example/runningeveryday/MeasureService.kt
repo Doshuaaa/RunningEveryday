@@ -189,7 +189,7 @@ class MeasureService : Service(), CoroutineScope{
         )
 
         documentReference.collection(calendar.get(Calendar.DAY_OF_MONTH).toString())
-            .document(targetDistance.toString()).set(timeData as Map<String, Any>)
+            .document(targetDistance.toInt().toString()).set(timeData as Map<String, Any>)
 
         val dateData = hashMapOf(
             calendar.get(Calendar.DAY_OF_MONTH).toString() to "ok"
@@ -199,7 +199,7 @@ class MeasureService : Service(), CoroutineScope{
 
         val top10Reference =
             fireStore.collection("users").document(auth.uid!!)
-                .collection("top10").document(targetDistance.toString())
+                .collection("top10").document(targetDistance.toInt().toString())
 
 
         top10Reference.get().addOnSuccessListener { task ->
