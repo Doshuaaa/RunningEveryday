@@ -7,6 +7,13 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="정확한 기록 측정을 위한 초기 회원정보를 입력해주세요"
+        android:layout_gravity="center"
+        android:textSize="16sp"
+        android:layout_margin="20dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="@string/plz_select_sex_text_view"
         android:layout_marginTop="20dp"
         android:layout_gravity="center"/>
@@ -42,11 +49,11 @@
     </RadioGroup>
 
     <TextView
-        android:layout_width="300dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="② 출생년도를 골라주세요"
         android:layout_marginTop="20dp"
-        android:gravity="center"/>
+        android:layout_gravity="center"/>
 
     <NumberPicker
         android:layout_margin="10dp"

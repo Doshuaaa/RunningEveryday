@@ -21,7 +21,8 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="15dp"
             android:text="@string/running_everytime"
-            android:textStyle="bold" />
+            android:textSize="24sp"
+            android:fontFamily="@font/omyu_pretty" />
 
         <ImageView
             android:id="@+id/setting_image_button"
@@ -30,6 +31,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="15dp"
+            android:padding="5dp"
             android:src="@drawable/baseline_settings_24" />
 
     </RelativeLayout>
@@ -37,7 +39,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2.5">
+        android:layout_weight="2">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -48,7 +50,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_weight="1.5"
                 android:background="#4FC3F7"
                 tools:ignore="NestedWeights" />
         </LinearLayout>
@@ -57,11 +59,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
-            android:layout_marginTop="20dp"
             android:layout_marginEnd="30dp"
-            android:background="#ffffff"
+            android:layout_gravity="top"
             android:orientation="vertical"
-            android:padding="10dp">
+            android:padding="10dp"
+            android:background="@drawable/round_layout">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -77,10 +79,8 @@
                     android:id="@+id/profile_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="20dp"
-                    android:layout_toEndOf="@+id/profile_img_view"
-                    android:text="김민수 님 안녕하세요" />
+                    android:layout_marginStart="20dp" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -92,8 +92,6 @@
                     android:id="@+id/streak_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:text="3일째 스트릭 기록중!"
                     android:textSize="24sp" />
             </LinearLayout>
 
@@ -105,62 +103,85 @@
         android:layout_height="0dp"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
-        android:layout_weight="2">
+        android:layout_weight="2.5"
+        android:orientation="vertical"
+        android:background="@drawable/round_layout"
+        android:layout_marginBottom="5dp">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            tools:ignore="NestedWeights">
-
-            <TextView
-                android:id="@+id/weather_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:gravity="center"
-                android:text="화창" />
-
-            <ImageView
-                android:id="@+id/weather_image_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:src="@drawable/clouds_and_sun" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="현재 날씨"
+            android:textSize="16sp"
+            android:textStyle="bold"
             android:gravity="center"
-            android:orientation="vertical">
+            android:padding="10dp"/>
 
-            <TextView
-                android:id="@+id/temp_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#959292"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                tools:ignore="NestedWeights">
+
+                <TextView
+                    android:id="@+id/weather_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center" />
+
+                <ImageView
+                    android:id="@+id/weather_image_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:text="12℃"
-                android:textSize="30sp" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/pop_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="강수확률: 60%" />
+                <TextView
+                    android:id="@+id/temp_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="30sp" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/skip_run_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="오늘 운동 스킵"
-                android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/pop_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center" />
 
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/skip_run_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="오늘 운동 스킵"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
         </LinearLayout>
+
+
+
+
     </LinearLayout>
 
     <LinearLayout
@@ -192,8 +213,7 @@
             <TextView
                 android:id="@+id/calendar_month_text_view"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="2024년 1월" />
+                android:layout_height="wrap_content" />
 
             <ImageButton
                 android:id="@+id/calendar_right_image_button"

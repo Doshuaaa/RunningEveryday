@@ -1,12 +1,17 @@
 package com.example.runningeveryday
 
 import android.app.Dialog
+import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
+import android.hardware.input.InputManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.runningeveryday.databinding.ActivitySettingBinding
@@ -163,8 +168,9 @@ class SettingActivity : AppCompatActivity() {
             setContentView(withdrawalBinding.root)
 
             withdrawalBinding.withdrawalButton.setOnClickListener {
-                val a  = withdrawalBinding.withdrawalEditText.text
                 if(withdrawalBinding.withdrawalEditText.text.toString() == "계정탈퇴") {
+
+                    hideKeyboard()
 
                     for(reference in deleteRefList) {
                         reference.get().addOnSuccessListener {
@@ -178,10 +184,18 @@ class SettingActivity : AppCompatActivity() {
                         firebaseAuth.currentUser?.delete()?.addOnCompleteListener {
                             if(it.isSuccessful) {
                                 MainActivity.mainActivity?.finish()
-                                dismiss()
-                                finish()
-                                val intent = Intent(context, LoginActivity::class.java)
-                                startActivity(intent)
+
+                                val dlg = AlertDialog.Builder(context)
+                                dlg.apply {
+                                    setMessage("계정이 삭제되었습니다")
+                                    setPositiveButton("확인", DialogInterface.OnClickListener { _, _ ->
+                                        dismiss()
+                                        finish()
+                                        val intent = Intent(context, LoginActivity::class.java)
+                                        startActivity(intent)
+                                    })
+                                    show()
+                                }
                             }
                         }
                     }
@@ -191,4 +205,11 @@ class SettingActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun hideKeyboard() {
+        val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+        //inputManager.hideSoftInputFromWindow(this.findViewById<View>(android.R.id.content).windowToken, 0);
+    }
+        // inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
 }

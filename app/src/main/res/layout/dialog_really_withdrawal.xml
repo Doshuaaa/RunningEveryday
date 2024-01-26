@@ -15,7 +15,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="계정 탈퇴를 하면 복구가 불가능해요\n탈퇴를 원하면 아래에 계정탈퇴라고 적고 탈퇴하기 버튼을 눌러주세요"
+        android:text="계정 탈퇴를 하면 복구가 불가능해요\n탈퇴를 원하면 아래에 '계정탈퇴'라고 적고 '탈퇴하기' 버튼을 눌러주세요"
         android:layout_gravity="center"
         android:gravity="center"
         android:layout_marginTop="40dp"

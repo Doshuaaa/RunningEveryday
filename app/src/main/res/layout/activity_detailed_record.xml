@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bottom_round"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/detailed_date_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2012년 3월 30일"
+            android:layout_margin="20dp"
+            android:textSize="20sp"
+            android:layout_gravity="center"
+            android:fontFamily="@font/omyu_pretty" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/detailed_1500_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1.5 km   - "
+                android:textSize="24sp"
+                android:layout_margin="10dp"
+                android:fontFamily="@font/omyu_pretty"/>
+
+            <TextView
+                android:id="@+id/detailed_1500_time_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="8분 31초"
+                android:textSize="18sp"
+                android:fontFamily="@font/omyu_pretty"
+                android:layout_gravity="center"/>
+        </LinearLayout>
+
+
+        <ImageView
+            android:id="@+id/detailed_1500_grade_image_view"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/diamond"
+            android:layout_gravity="center"/>
+
+        <TextView
+            android:id="@+id/detailed_1500_grade_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="특급"
+            android:layout_gravity="center"
+            android:textSize="24sp"
+            android:fontFamily="@font/omyu_pretty"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/detailed_3000_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3.0 km   - "
+                android:textSize="24sp"
+                android:layout_margin="10dp"
+                android:fontFamily="@font/omyu_pretty"/>
+
+            <TextView
+                android:id="@+id/detailed_3000_time_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="8분 31초"
+                android:textSize="18sp"
+                android:fontFamily="@font/omyu_pretty"
+                android:layout_gravity="center"/>
+        </LinearLayout>
+
+
+        <ImageView
+            android:id="@+id/detailed_3000_grade_image_view"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/diamond"
+            android:layout_gravity="center"/>
+
+        <TextView
+            android:id="@+id/detailed_3000_grade_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="특급"
+            android:layout_gravity="center"
+            android:textSize="24sp"
+            android:fontFamily="@font/omyu_pretty"/>
+
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,13 +1,15 @@
 package com.example.runningeveryday.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.example.runningeveryday.DetailedRecordActivity
 import com.example.runningeveryday.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -16,17 +18,18 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-class DayAdapter(val tempMonth: Int, val dayList: MutableList<Date>, val context: Context) : RecyclerView.Adapter<DayAdapter.ViewHolder>() {
+class DayAdapter(private val tempMonth: Int, private val dayList: MutableList<Date>, val context: Context) : RecyclerView.Adapter<DayAdapter.ViewHolder>() {
 
     private val fireStore = FirebaseFirestore.getInstance()
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val dateFormat = SimpleDateFormat("YYYYMM", Locale.KOREA)
-    private val recordReference = fireStore.collection("users")
+    private val recordCollectionRef = fireStore.collection("users")
         .document(firebaseAuth.uid!!).collection("record")
 
     class ViewHolder(val layout: View) : RecyclerView.ViewHolder(layout) {
         val dayTextView: TextView = layout.findViewById(R.id.day_of_week_textView)
         val gradeImageView: ImageView = layout.findViewById(R.id.check_grade_text_view)
+        val dayLayout: LinearLayout = layout.findViewById(R.id.item_day_layout)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -52,6 +55,17 @@ class DayAdapter(val tempMonth: Int, val dayList: MutableList<Date>, val context
         } else if ( position % 7 == 0) {
             holder.dayTextView.setTextColor(ContextCompat.getColor(holder.layout.context, R.color.red))
         }
+
+        holder.dayLayout.setOnClickListener {
+
+            recordCollectionRef.document(dateFormat.format(dayList[position])).get().addOnSuccessListener {
+                if (it.get(dayList[position].date.toString()) == "ok") {
+                    val intent = Intent(context, DetailedRecordActivity::class.java)
+                    intent.putExtra("date", dayList[position].time)
+                    context.startActivity(intent)
+                }
+            }
+        }
     }
 
 
@@ -61,7 +75,7 @@ class DayAdapter(val tempMonth: Int, val dayList: MutableList<Date>, val context
         cal.time = dayList[position]
 
 
-        recordReference.document(dateFormat.format(cal.time)).get().addOnSuccessListener {document ->
+        recordCollectionRef.document(dateFormat.format(cal.time)).get().addOnSuccessListener { document ->
 
             if(document != null) {
 
