@@ -211,7 +211,7 @@ class MeasureService : Service(), CoroutineScope{
 
 
             if(top10List.size in 0..9) {
-                top10Reference.update(
+                top10Reference.set(
                     hashMapOf(
                         timeFormat.format(calendar.time).toString() to currentTime
                     ) as Map<String, Any>

@@ -29,7 +29,7 @@ class NotificationHelper(context: Context, private var targetDistance: Float) {
         Notification.Builder(context, CHANNEL_ID)
             .setContentTitle("RunningEveryday")
             .setContentIntent(pendingIntent)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.running_everyday)
             .setAutoCancel(false)
             .setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE)
     }
@@ -42,7 +42,7 @@ class NotificationHelper(context: Context, private var targetDistance: Float) {
     private fun createChannel() : NotificationChannel {
 
         return NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT).apply {
-            //vibrationPattern = longArrayOf(0)
+            enableVibration(false)
         }
     }
 
@@ -54,6 +54,7 @@ class NotificationHelper(context: Context, private var targetDistance: Float) {
 
     fun completeNotification(curTime: Int) {
         notificationBuilder.setContentText("${targetDistance}m 측정 완료!  <걸린 시간: ${curTime / 60} : ${curTime % 60}>")
+        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
     }
 
     fun notificationCancel() {

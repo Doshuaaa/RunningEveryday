@@ -69,6 +69,8 @@ class MainActivity : AppCompatActivity() {
         }
         if(!checkLocationPermission(permissions)) {
             activityResultLauncher.launch(permissions)
+        } else {
+            setFragment(HomeFragment())
         }
 
 
@@ -85,7 +87,6 @@ class MainActivity : AppCompatActivity() {
                 setFragment(StatsFragment())
             }
         }
-        setFragment(HomeFragment())
     }
 
 

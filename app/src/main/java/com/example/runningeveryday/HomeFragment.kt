@@ -26,6 +26,8 @@ import com.example.runningeveryday.dialog.LoadingDialog
 import com.example.runningeveryday.model.Weather
 import com.example.runningeverytime.api.WeatherApi
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import retrofit2.Call
@@ -108,14 +110,23 @@ class HomeFragment : Fragment() {
 
         val locationManager: LocationManager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         var curLocation: Location? = null
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         try {
-           curLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+           //curLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+
+            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).addOnSuccessListener {
+                if(it != null) {
+                    curLocation = it
+                    curPoint = dfs_xy_conv(curLocation!!.latitude, curLocation!!.longitude)
+                    setWeather(curPoint!!.x.toString(), curPoint!!.y.toString() )
+                }
+            }
+
         } catch (e: SecurityException) {
             e.printStackTrace()
         }
 
-        curPoint = dfs_xy_conv(curLocation!!.latitude, curLocation.longitude)
-        setWeather(curPoint!!.x.toString(), curPoint!!.y.toString() )
+
         initCalendar()
         getCurrentUserProfile()
 
