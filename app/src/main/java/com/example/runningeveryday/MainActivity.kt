@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.Manifest
 import android.app.Dialog
+import android.content.Context
 import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -51,6 +53,7 @@ class MainActivity : AppCompatActivity() {
     private val fireStore = FirebaseFirestore.getInstance()
     val informationRef = fireStore.collection("users").document(FirebaseAuth.getInstance().uid.toString())
     .collection("information")
+    private val locationManager by lazy { getSystemService(Context.LOCATION_SERVICE) as LocationManager }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,24 +71,26 @@ class MainActivity : AppCompatActivity() {
             }
         }
         if(!checkLocationPermission(permissions)) {
+            setFragment(NeedSettingFragment())
             activityResultLauncher.launch(permissions)
-        } else {
+        } else if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            setFragment(NeedSettingFragment())
+            }
+        else {
+            binding.apply {
+                homeButton.setOnClickListener {
+                    setFragment(HomeFragment())
+                }
+
+                measureButton.setOnClickListener {
+                    setFragment(MeasureFragment())
+                }
+
+                statsButton.setOnClickListener{
+                    setFragment(StatsFragment())
+                }
+            }
             setFragment(HomeFragment())
-        }
-
-
-        binding.apply {
-            homeButton.setOnClickListener {
-                setFragment(HomeFragment())
-            }
-
-            measureButton.setOnClickListener {
-                setFragment(MeasureFragment())
-            }
-
-            statsButton.setOnClickListener{
-                setFragment(StatsFragment())
-            }
         }
     }
 

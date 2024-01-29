@@ -18,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.lang.NullPointerException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -142,7 +143,9 @@ class MeasureService : Service(), CoroutineScope{
 
     private fun measureStop() {
         serviceState = MeasureState.STOP
+        totalDistance = 0f
         targetDistance = 0f
+        currentTime = 0
         broadcastTimeUpdate()
         broadcastDistanceUpdate()
         handler.removeCallbacks(runnable)
@@ -180,16 +183,16 @@ class MeasureService : Service(), CoroutineScope{
     private fun record() {
 
         val documentReference =
-            fireStore.collection("users").document(auth.uid!!)
-                .collection("record")
-                .document(SimpleDateFormat("YYYYMM", Locale.KOREA).format(calendar.time).toString())
+        fireStore.collection("users").document(auth.uid!!)
+            .collection("record")
+            .document(SimpleDateFormat("YYYYMM", Locale.KOREA).format(calendar.time).toString())
 
         val timeData = hashMapOf(
             "time" to currentTime
         )
 
         documentReference.collection(calendar.get(Calendar.DAY_OF_MONTH).toString())
-            .document(targetDistance.toInt().toString()).set(timeData as Map<String, Any>)
+            .document(MeasureService.targetDistance.toInt().toString()).set(timeData as Map<String, Any>)
 
         val dateData = hashMapOf(
             calendar.get(Calendar.DAY_OF_MONTH).toString() to "ok"
@@ -199,13 +202,17 @@ class MeasureService : Service(), CoroutineScope{
 
         val top10Reference =
             fireStore.collection("users").document(auth.uid!!)
-                .collection("top10").document(targetDistance.toInt().toString())
+                .collection("top10").document(MeasureService.targetDistance.toInt().toString())
 
 
         top10Reference.get().addOnSuccessListener { task ->
 
-            val top10List =
+            val top10List : MutableList<MutableMap.MutableEntry<String, Any>> = try {
                 task?.data?.entries?.sortedByDescending { it.value as Long }?.toMutableList()!!
+            } catch (e: NullPointerException) {
+                mutableListOf()
+            }
+
 
             val timeFormat = SimpleDateFormat("yyyy년 M월 dd일", Locale.KOREA)
 
