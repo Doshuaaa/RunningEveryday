@@ -40,22 +40,28 @@ class DetailedRecordActivity : AppCompatActivity() {
 
         recordCollectionRef.get().addOnSuccessListener {
 
-                val a = it.documents
-                for(document in it.documents) {
+            val a = it.documents
+            for (document in it.documents) {
 
-                    when(document.id) {
+                when (document.id) {
 
-                        "1500" -> {
-                            set1500View(document.get("time") as Long)
-                        }
+                    "1500" -> {
+                        set1500View(document.get("time") as Long)
+                    }
 
-                        "3000" -> {
-                            set3000View(document.get("time") as Long)
-                        }
+                    "3000" -> {
+                        set3000View(document.get("time") as Long)
                     }
                 }
             }
+        }
+    }
 
+    override fun onResume() {
+        super.onResume()
+        if(NotificationHelper.vibrator != null) {
+            NotificationHelper.vibrator?.cancel()
+        }
     }
 
     private fun set1500View(time: Long) {

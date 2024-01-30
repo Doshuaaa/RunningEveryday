@@ -6,16 +6,22 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.CombinedVibration
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import androidx.core.app.NotificationCompat
+import androidx.core.content.getSystemService
 
 private const val CHANNEL_ID = "Channel"
 private const val CHANNEL_NAME = "ChannelName"
 
-class NotificationHelper(context: Context, private var targetDistance: Float) {
+class NotificationHelper(val context: Context, private var targetDistance: Float) {
 
 
     companion object {
         const val NOTIFICATION_ID = 99
+        var vibrator: VibratorManager? = null
     }
 
     private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -32,6 +38,7 @@ class NotificationHelper(context: Context, private var targetDistance: Float) {
             .setSmallIcon(R.drawable.running_everyday)
             .setAutoCancel(false)
             .setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE)
+            .setDefaults(Notification.DEFAULT_ALL)
     }
 
     fun getNotification() : Notification {
@@ -41,8 +48,13 @@ class NotificationHelper(context: Context, private var targetDistance: Float) {
 
     private fun createChannel() : NotificationChannel {
 
-        return NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT).apply {
-            enableVibration(false)
+        return NotificationChannel(
+            CHANNEL_ID,
+            CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_LOW
+        ).apply {
+            vibrationPattern = longArrayOf(100, 200)
+            enableVibration(true)
         }
     }
 
@@ -53,7 +65,14 @@ class NotificationHelper(context: Context, private var targetDistance: Float) {
     }
 
     fun completeNotification(curTime: Int) {
-        notificationBuilder.setContentText("${targetDistance}m 측정 완료!  <걸린 시간: ${curTime / 60} : ${curTime % 60}>")
+        val vibrator = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+        val timings = longArrayOf(100, 1000, 100)
+        val amplitudes = intArrayOf(0, 100, 0)
+        val vibrationEffect = VibrationEffect.createWaveform(timings, amplitudes, 1)
+        val combinedVibration = CombinedVibration.createParallel(vibrationEffect)
+        vibrator.vibrate(combinedVibration)
+        //vibrator.cancel()
+        notificationBuilder.setContentText("${String.format("%2f", targetDistance / 1000.0)}m 측정 완료!  <걸린 시간: ${curTime / 60} : ${curTime % 60}>")
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
     }
 
@@ -61,9 +80,6 @@ class NotificationHelper(context: Context, private var targetDistance: Float) {
         notificationManager.cancel(NOTIFICATION_ID)
     }
 
-    fun getTargetDistance() : Float{
-        return targetDistance
-    }
 
     fun setTargetDistance(targetDistance: Float) {
         this.targetDistance = targetDistance

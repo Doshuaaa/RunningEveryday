@@ -7,6 +7,9 @@ import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.os.CombinedVibration
+import android.os.VibrationEffect
+import android.os.VibratorManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -94,7 +97,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+    override fun onResume() {
+        super.onResume()
+        if(NotificationHelper.vibrator != null) {
+            NotificationHelper.vibrator?.cancel()
+        }
+    }
 
     private fun checkLocationPermission(permissions: Array<String>) : Boolean {
         return permissions.all {

@@ -66,6 +66,7 @@ class MeasureFragment : Fragment() {
 
     //
     private var tempTime = 0
+    private var tempDistance = 0f
     //
 
     override fun onAttach(context: Context) {
@@ -159,6 +160,9 @@ class MeasureFragment : Fragment() {
             context?.registerReceiver(measureReceiver, IntentFilter(DISTANCE_ACTION), Context.RECEIVER_EXPORTED)
             mainViewModel.isReceiverRegistered = true
         }
+
+        binding.timeTextView.text = timeFormat(tempTime)
+        binding.currentDistanceTextView.text = String.format("%.2f", tempDistance / 1000.0)
     }
 
     override fun onPause() {
@@ -213,6 +217,7 @@ class MeasureFragment : Fragment() {
             }
             else if (intent.action == DISTANCE_ACTION) {
                 val distance = intent.getFloatExtra(NOTIFICATION_DISTANCE, 0f)
+                tempDistance = distance
                 updateDistanceUi(distance)
             }
         }
@@ -268,7 +273,7 @@ class MeasureFragment : Fragment() {
 
 
             if(top10List.size in 0..9) {
-                top10Reference.set(
+                top10Reference.update(
                     hashMapOf(
                         timeFormat.format(calendar.time).toString() to tempTime
                     ) as Map<String, Any>
@@ -279,11 +284,10 @@ class MeasureFragment : Fragment() {
                     top10List.removeAt(0)
                     val map = top10List.associate { it.key to it.value }.toMutableMap()
                     map[timeFormat.format(calendar.time).toString()] = tempTime
-                    top10Reference.set(map)
+                    top10Reference.update(map)
                 }
             }
         }
-
 
 
         ///////

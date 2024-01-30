@@ -32,7 +32,7 @@ const val DISTANCE_ACTION = "distance_action"
 const val NOTIFICATION_TIME = "NotificationTime"
 const val NOTIFICATION_DISTANCE = "NotificationDistance"
 
-class MeasureService : Service(), CoroutineScope{
+class MeasureService : Service(), CoroutineScope {
 
     private var serviceState: MeasureState = MeasureState.INITIALIZED
     private val helper: NotificationHelper by lazy {  NotificationHelper(this, targetDistance) }
@@ -81,10 +81,24 @@ class MeasureService : Service(), CoroutineScope{
             if(totalDistance >= targetDistance) {
 
                 record()
-                measureStop()
+                //measureStop()
+                measureComplete()
                 helper.completeNotification(currentTime)
             }
         }
+    }
+
+    private fun measureComplete() {
+        serviceState = MeasureState.STOP
+        totalDistance = 0f
+        targetDistance = 0f
+        broadcastTimeUpdate()
+        broadcastDistanceUpdate()
+        handler.removeCallbacks(runnable)
+        locationManager.removeUpdates(locationListener)
+        stopForeground(STOP_FOREGROUND_DETACH)
+        helper.notificationCancel()
+        wakeLock.release()
     }
 
     private val wakeLock: PowerManager.WakeLock by lazy {
@@ -145,7 +159,6 @@ class MeasureService : Service(), CoroutineScope{
         serviceState = MeasureState.STOP
         totalDistance = 0f
         targetDistance = 0f
-        currentTime = 0
         broadcastTimeUpdate()
         broadcastDistanceUpdate()
         handler.removeCallbacks(runnable)
@@ -153,6 +166,7 @@ class MeasureService : Service(), CoroutineScope{
         stopForeground(STOP_FOREGROUND_DETACH)
         helper.notificationCancel()
         wakeLock.release()
+        currentTime = 0
     }
 
     private fun broadcastTimeUpdate() {
@@ -213,27 +227,27 @@ class MeasureService : Service(), CoroutineScope{
                 mutableListOf()
             }
 
-
             val timeFormat = SimpleDateFormat("yyyy년 M월 dd일", Locale.KOREA)
 
 
             if(top10List.size in 0..9) {
-                top10Reference.set(
+                top10Reference.update(
                     hashMapOf(
                         timeFormat.format(calendar.time).toString() to currentTime
                     ) as Map<String, Any>
                 )
+                currentTime = 0
             }
             else {
                 if (currentTime < top10List[0].value as Long) {
                     top10List.removeAt(0)
                     val map = top10List.associate { it.key to it.value }.toMutableMap()
                     map[timeFormat.format(calendar.time).toString()] = currentTime
-                    top10Reference.set(map)
+                    top10Reference.update(map)
                 }
+                currentTime = 0
             }
         }
-
     }
 
 }

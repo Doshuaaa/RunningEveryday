@@ -68,6 +68,13 @@ class SettingActivity : AppCompatActivity() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        if(NotificationHelper.vibrator != null) {
+            NotificationHelper.vibrator?.cancel()
+        }
+    }
+
     private fun signOut() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
