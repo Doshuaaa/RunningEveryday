@@ -116,6 +116,7 @@ class MeasureFragment : Fragment() {
                     == PackageManager.PERMISSION_GRANTED) {
                     //mainViewModel.isForegroundServiceRunning = true
                     binding.distanceSpinner.isEnabled = false
+                    //NotificationHelper.isRunning = true
                     sendCommandToForegroundService(MeasureState.START)
                 } else {
                     AlertDialog.Builder(requireContext()).apply {
@@ -142,6 +143,7 @@ class MeasureFragment : Fragment() {
                         //mainViewModel.isForegroundServiceRunning = false
                         binding.distanceSpinner.isEnabled = true
                         sendCommandToForegroundService(MeasureState.STOP)
+
                     })
                     setNegativeButton("측정 계속하기",  null)
                 }

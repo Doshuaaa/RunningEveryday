@@ -6,14 +6,15 @@ import android.Manifest
 import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.location.LocationManager
-import android.os.CombinedVibration
-import android.os.VibrationEffect
-import android.os.VibratorManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
@@ -58,6 +59,10 @@ class MainActivity : AppCompatActivity() {
     .collection("information")
     private val locationManager by lazy { getSystemService(Context.LOCATION_SERVICE) as LocationManager }
 
+    private val homeDrawable: Drawable by lazy { ResourcesCompat.getDrawable(resources, R.drawable.baseline_home_24, null)!! }
+    private val measureDrawable: Drawable by lazy { ResourcesCompat.getDrawable(resources, R.drawable.baseline_directions_run_24, null)!!  }
+    private val statsDrawable: Drawable by lazy { ResourcesCompat.getDrawable(resources, R.drawable.baseline_query_stats_24, null)!!  }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -82,18 +87,45 @@ class MainActivity : AppCompatActivity() {
         else {
             binding.apply {
                 homeButton.setOnClickListener {
+
+                    setHomeFragmentTint("#03A9F4")
+                    setMeasureFragmentTint("#666363")
+                    setStatsFragmentTint("#666363")
                     setFragment(HomeFragment())
                 }
 
                 measureButton.setOnClickListener {
+
+                    setHomeFragmentTint("#666363")
+                    setMeasureFragmentTint("#03A9F4")
+                    setStatsFragmentTint("#666363")
                     setFragment(MeasureFragment())
                 }
 
                 statsButton.setOnClickListener{
+                    setHomeFragmentTint("#666363")
+                    setMeasureFragmentTint("#666363")
+                    setStatsFragmentTint("#03A9F4")
                     setFragment(StatsFragment())
                 }
             }
             setFragment(HomeFragment())
+        }
+    }
+
+    private fun setHomeFragmentTint(color: String) {
+        DrawableCompat.setTint(homeDrawable, Color.parseColor(color))
+        binding.homeImageAndText.apply {
+            setCompoundDrawablesWithIntrinsicBounds(null, homeDrawable, null, null)
+            setTextColor(Color.parseColor(color))
+        }
+    }
+
+    private fun setMeasureFragmentTint(color: String) {
+        DrawableCompat.setTint(measureDrawable, Color.parseColor(color))
+        binding.measureImageAndText.apply {
+            setCompoundDrawablesWithIntrinsicBounds(null, measureDrawable, null, null)
+            setTextColor(Color.parseColor(color))
         }
     }
 
@@ -136,6 +168,14 @@ class MainActivity : AppCompatActivity() {
                     sex = task.get("sex") as String
                 }
             }
+    }
+
+    private fun setStatsFragmentTint(color: String) {
+        DrawableCompat.setTint(statsDrawable, Color.parseColor(color))
+        binding.statsImageText.apply {
+            setCompoundDrawablesWithIntrinsicBounds(null, statsDrawable, null, null)
+            setTextColor(Color.parseColor(color))
+        }
     }
 
     inner class InformationDialog : Dialog(this) {

@@ -10,9 +10,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:background="#4FC3F7">
 
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="기록 측정"
+            android:textSize="24sp"
+            android:layout_gravity="center"
+            android:layout_marginStart="15sp"
+            android:fontFamily="@font/omyu_pretty"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,12 +39,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="측정할 거리"
-                android:layout_marginEnd="15dp"/>
+                android:layout_marginEnd="15dp"
+                android:textSize="24sp"/>
             <Spinner
                 android:id="@+id/distanceSpinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"/>
+                android:layout_marginStart="15dp" />
         </LinearLayout>
 
 

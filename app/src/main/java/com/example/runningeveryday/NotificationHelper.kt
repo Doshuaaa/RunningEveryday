@@ -6,12 +6,17 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.media.AudioAttributes
 import android.os.CombinedVibration
+import android.os.Handler
+import android.os.Looper
+import android.os.VibrationAttributes
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
+import kotlinx.coroutines.delay
 
 private const val CHANNEL_ID = "Channel"
 private const val CHANNEL_NAME = "ChannelName"
@@ -22,6 +27,12 @@ class NotificationHelper(val context: Context, private var targetDistance: Float
     companion object {
         const val NOTIFICATION_ID = 99
         var vibrator: VibratorManager? = null
+        //var isRunning = false
+    }
+
+    val handler = Handler(Looper.getMainLooper())
+    val runnable = Runnable {
+        notificationManager.cancel(NOTIFICATION_ID)
     }
 
     private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -30,15 +41,15 @@ class NotificationHelper(val context: Context, private var targetDistance: Float
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
     }
 
-
     private val notificationBuilder: Notification.Builder by lazy {
         Notification.Builder(context, CHANNEL_ID)
             .setContentTitle("RunningEveryday")
             .setContentIntent(pendingIntent)
             .setSmallIcon(R.drawable.running_everyday)
-            .setAutoCancel(false)
+            .setAutoCancel(true)
             .setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE)
             .setDefaults(Notification.DEFAULT_ALL)
+            .setOngoing(true)
     }
 
     fun getNotification() : Notification {
@@ -60,24 +71,38 @@ class NotificationHelper(val context: Context, private var targetDistance: Float
 
     fun updateNotification(curDistance: Float, curTime: Int) {
 
-        notificationBuilder.setContentText("시간: ${curTime / 60} : ${curTime % 60}\n  거리: ${String.format("%.2f", curDistance / 1000.0)} / ${targetDistance}")
+
+        notificationBuilder.setContentText(
+            "시간: ${curTime / 60} : ${curTime % 60}\n  거리: ${
+                String.format(
+                    "%.2f",
+                    curDistance / 1000.0
+                )
+            } / ${targetDistance}"
+        )
+
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
+
     }
 
     fun completeNotification(curTime: Int) {
-        val vibrator = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+        vibrator = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
         val timings = longArrayOf(100, 1000, 100)
         val amplitudes = intArrayOf(0, 100, 0)
         val vibrationEffect = VibrationEffect.createWaveform(timings, amplitudes, 1)
         val combinedVibration = CombinedVibration.createParallel(vibrationEffect)
-        vibrator.vibrate(combinedVibration)
+        val audioAttributes = VibrationAttributes.Builder()
+            .setUsage(VibrationAttributes.USAGE_ALARM)
+            .build()
+        vibrator?.vibrate(combinedVibration, audioAttributes)
         //vibrator.cancel()
         notificationBuilder.setContentText("${String.format("%2f", targetDistance / 1000.0)}m 측정 완료!  <걸린 시간: ${curTime / 60} : ${curTime % 60}>")
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
     }
 
     fun notificationCancel() {
-        notificationManager.cancel(NOTIFICATION_ID)
+
+        handler.postDelayed(runnable, 1000L)
     }
 
 

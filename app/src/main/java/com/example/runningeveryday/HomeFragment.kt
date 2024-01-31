@@ -91,7 +91,12 @@ class HomeFragment : Fragment() {
     }
 
     private val calRecyclerView by lazy { binding.calendarRecyclerView }
+    private lateinit var mContext: Context
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mContext = context
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -99,7 +104,7 @@ class HomeFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
         viewBinding = FragmentHomeBinding.inflate(layoutInflater)
-        loadingDialog = LoadingDialog(requireContext())
+        loadingDialog = LoadingDialog(mContext)
         loadingDialog.show()
     }
 
@@ -110,7 +115,7 @@ class HomeFragment : Fragment() {
 
         val locationManager: LocationManager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         var curLocation: Location? = null
-        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
         try {
            //curLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
 
@@ -131,7 +136,7 @@ class HomeFragment : Fragment() {
         getCurrentUserProfile()
 
         binding.settingImageButton.setOnClickListener {
-            val intent = Intent(requireContext(), SettingActivity::class.java)
+            val intent = Intent(mContext, SettingActivity::class.java)
             startActivity(intent)
         }
 
@@ -316,7 +321,7 @@ class HomeFragment : Fragment() {
 
     private fun initCalendar() {
 
-        calRecyclerView.adapter = MonthAdapter(requireContext())
+        calRecyclerView.adapter = MonthAdapter(mContext)
         calRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         calRecyclerView.scrollToPosition(calPosition)
         PagerSnapHelper().attachToRecyclerView(calRecyclerView)

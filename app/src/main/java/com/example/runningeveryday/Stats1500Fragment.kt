@@ -1,5 +1,6 @@
 package com.example.runningeveryday
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -34,6 +35,11 @@ class Stats1500Fragment : Fragment() {
     private val binding get() = viewBinding!!
     private lateinit var top10List  : List<Pair<String, Any>>
     private lateinit var loadingDialog: LoadingDialog
+    lateinit var mContext: Context
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mContext = context
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +53,7 @@ class Stats1500Fragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        loadingDialog = LoadingDialog(requireContext())
+        loadingDialog = LoadingDialog(mContext)
         loadingDialog.show()
         viewBinding = FragmentStats1500Binding.inflate(layoutInflater)
         setTop10List()
@@ -113,10 +119,10 @@ class Stats1500Fragment : Fragment() {
                 (top10List[0].second as Long % 60)
             )
 
-            val decoration = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+            val decoration = DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL)
             binding.top10Of1500RecyclerView.apply {
                 adapter = RecordAdapter(top10List, 1500)
-                layoutManager = LinearLayoutManager(requireContext())
+                layoutManager = LinearLayoutManager(mContext)
                 addItemDecoration(decoration)
             }
         } catch (e: UninitializedPropertyAccessException) {

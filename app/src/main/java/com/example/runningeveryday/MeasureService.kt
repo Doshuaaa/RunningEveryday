@@ -164,9 +164,9 @@ class MeasureService : Service(), CoroutineScope {
         handler.removeCallbacks(runnable)
         locationManager.removeUpdates(locationListener)
         stopForeground(STOP_FOREGROUND_DETACH)
-        helper.notificationCancel()
         wakeLock.release()
         currentTime = 0
+        helper.notificationCancel()
     }
 
     private fun broadcastTimeUpdate() {
