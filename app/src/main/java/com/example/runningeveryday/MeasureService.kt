@@ -197,21 +197,30 @@ class MeasureService : Service(), CoroutineScope {
     private fun record() {
 
         val documentReference =
-        fireStore.collection("users").document(auth.uid!!)
-            .collection("record")
-            .document(SimpleDateFormat("YYYYMM", Locale.KOREA).format(calendar.time).toString())
+            fireStore.collection("users").document(auth.uid!!)
+                .collection("record")
+                .document(SimpleDateFormat("YYYYMM", Locale.KOREA).format(calendar.time).toString())
+
+        val dateData = hashMapOf(
+            calendar.get(Calendar.DAY_OF_MONTH).toString() to "ok"
+        )
+
+        documentReference.get().addOnSuccessListener {
+            if(it.data == null) {
+                documentReference.set(dateData as Map<String, String>)
+            } else {
+                documentReference.update(dateData as Map<String, String>)
+            }
+        }
 
         val timeData = hashMapOf(
             "time" to currentTime
         )
 
-        documentReference.collection(calendar.get(Calendar.DAY_OF_MONTH).toString())
-            .document(MeasureService.targetDistance.toInt().toString()).set(timeData as Map<String, Any>)
 
-        val dateData = hashMapOf(
-            calendar.get(Calendar.DAY_OF_MONTH).toString() to "ok"
-        )
-        documentReference.update(dateData as Map<String, Any>)
+        documentReference.collection(calendar.get(Calendar.DAY_OF_MONTH).toString())
+            .document(targetDistance.toString()).set(timeData as Map<String, Any>)
+
 
 
         val top10Reference =
@@ -231,11 +240,20 @@ class MeasureService : Service(), CoroutineScope {
 
 
             if(top10List.size in 0..9) {
-                top10Reference.update(
-                    hashMapOf(
-                        timeFormat.format(calendar.time).toString() to currentTime
-                    ) as Map<String, Any>
-                )
+                if(top10List.size == 0) {
+                    top10Reference.set(
+                        hashMapOf(
+                            timeFormat.format(calendar.time).toString() to currentTime
+                        ) as Map<String, Any>
+                    )
+                }
+                else {
+                    top10Reference.update(
+                        hashMapOf(
+                            timeFormat.format(calendar.time).toString() to currentTime
+                        ) as Map<String, Any>
+                    )
+                }
                 currentTime = 0
             }
             else {

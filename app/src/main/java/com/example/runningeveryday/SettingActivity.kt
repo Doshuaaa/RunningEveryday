@@ -36,9 +36,9 @@ class SettingActivity : AppCompatActivity() {
 
     private val deleteRefList = listOf(
         fireStore.collection("users").document(firebaseAuth.uid!!).collection("information"),
-        fireStore.collection("users").document(firebaseAuth.uid!!).collection("record"),
         fireStore.collection("users").document(firebaseAuth.uid!!).collection("top10")
     )
+    val recordRef = fireStore.collection("users").document(firebaseAuth.uid!!).collection("record")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -178,6 +178,24 @@ class SettingActivity : AppCompatActivity() {
                 if(withdrawalBinding.withdrawalEditText.text.toString() == "계정탈퇴") {
 
                     hideKeyboard()
+
+                    recordRef.get().addOnSuccessListener {
+                        for(document in it.documents) {
+                            recordRef.document(document.id).get().addOnSuccessListener { date ->
+                                val list = date.data?.entries?.toList()
+
+                                if(list != null) {
+
+                                    for(map in list) {
+
+                                        recordRef.document(document.id).collection(map.key).document("1500").delete()
+                                        recordRef.document(document.id).collection(map.key).document("3000").delete()
+                                    }
+                                }
+                                recordRef.document(document.id).delete()
+                            }
+                        }
+                    }
 
                     for(reference in deleteRefList) {
                         reference.get().addOnSuccessListener {

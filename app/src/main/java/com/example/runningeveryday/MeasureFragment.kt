@@ -1,14 +1,19 @@
 package com.example.runningeveryday
 
 import android.Manifest
+import android.app.Dialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -21,14 +26,18 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.runningeveryday.databinding.DialogCountDownBinding
 import com.example.runningeveryday.databinding.FragmentMeasureBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.delay
 import java.lang.NullPointerException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.Timer
+import java.util.TimerTask
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -117,7 +126,7 @@ class MeasureFragment : Fragment() {
                     //mainViewModel.isForegroundServiceRunning = true
                     binding.distanceSpinner.isEnabled = false
                     //NotificationHelper.isRunning = true
-                    sendCommandToForegroundService(MeasureState.START)
+                    CountDownDialog().show()
                 } else {
                     AlertDialog.Builder(requireContext()).apply {
                         setTitle("백그라운드 위치 정보 수집 권한 요청")
@@ -143,13 +152,13 @@ class MeasureFragment : Fragment() {
                         //mainViewModel.isForegroundServiceRunning = false
                         binding.distanceSpinner.isEnabled = true
                         sendCommandToForegroundService(MeasureState.STOP)
-
+                        record()
                     })
                     setNegativeButton("측정 계속하기",  null)
                 }
                 stopDlg.show()
             }
-            //record()
+
         }
 
         return binding.root
@@ -239,27 +248,36 @@ class MeasureFragment : Fragment() {
                 else -> 3000
             }
 
+
         val documentReference =
             fireStore.collection("users").document(auth.uid!!)
                 .collection("record")
                 .document(SimpleDateFormat("YYYYMM", Locale.KOREA).format(calendar.time).toString())
 
+        val dateData = hashMapOf(
+            calendar.get(Calendar.DAY_OF_MONTH).toString() to "ok"
+        )
+
+        documentReference.get().addOnSuccessListener {
+            if(it.data == null) {
+                documentReference.set(dateData as Map<String, String>)
+            } else {
+                documentReference.update(dateData as Map<String, String>)
+            }
+        }
+
         val timeData = hashMapOf(
             "time" to tempTime
         )
 
-        documentReference.collection(calendar.get(Calendar.DAY_OF_MONTH).toString())
-            .document(MeasureService.targetDistance.toInt().toString()).set(timeData as Map<String, Any>)
 
-        val dateData = hashMapOf(
-            calendar.get(Calendar.DAY_OF_MONTH).toString() to "ok"
-        )
-        documentReference.update(dateData as Map<String, Any>)
+        documentReference.collection(calendar.get(Calendar.DAY_OF_MONTH).toString())
+            .document(targetDistance.toString()).set(timeData as Map<String, Any>)
 
 
         val top10Reference =
             fireStore.collection("users").document(auth.uid!!)
-                .collection("top10").document(MeasureService.targetDistance.toInt().toString())
+                .collection("top10").document(targetDistance.toString())
 
 
         top10Reference.get().addOnSuccessListener { task ->
@@ -275,11 +293,20 @@ class MeasureFragment : Fragment() {
 
 
             if(top10List.size in 0..9) {
-                top10Reference.update(
-                    hashMapOf(
-                        timeFormat.format(calendar.time).toString() to tempTime
-                    ) as Map<String, Any>
-                )
+                if(top10List.size == 0) {
+                    top10Reference.set(
+                        hashMapOf(
+                            timeFormat.format(calendar.time).toString() to tempTime
+                        ) as Map<String, Any>
+                    )
+                }
+                else {
+                    top10Reference.update(
+                        hashMapOf(
+                            timeFormat.format(calendar.time).toString() to tempTime
+                        ) as Map<String, Any>
+                    )
+                }
             }
             else {
                 if (tempTime < top10List[0].value as Long) {
@@ -354,6 +381,42 @@ class MeasureFragment : Fragment() {
 //            .collection("${calendar.get(Calendar.DAY_OF_MONTH)}")
 //            .document(targetDistance.toString()).set(data)
 
+    }
+
+    inner class CountDownDialog : Dialog(requireContext()) {
+
+
+
+        private var countDownDialogViewBinding: DialogCountDownBinding? = null
+        private val countDownBinding get() = countDownDialogViewBinding!!
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+            countDownDialogViewBinding = DialogCountDownBinding.inflate(layoutInflater)
+            setContentView(countDownBinding.root)
+            setCancelable(false)
+            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            countDown()
+        }
+
+        private fun countDown() {
+             var countDown = 3
+            val timer = Timer()
+            val timerTask = object : TimerTask() {
+                override fun run() {
+                    val handler = Handler(Looper.getMainLooper())
+                    handler.post {
+                        if(countDown <= 0) {
+                            dismiss()
+                            timer.cancel()
+                            sendCommandToForegroundService(MeasureState.START)
+                        }
+                        countDownBinding.countDownTextView.text = countDown.toString()
+                        countDown--
+                    }
+                }
+            }
+            timer.schedule(timerTask, 0, 1000)
+        }
     }
 
 

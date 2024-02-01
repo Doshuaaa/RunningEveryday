@@ -46,10 +46,8 @@ class NotificationHelper(val context: Context, private var targetDistance: Float
             .setContentTitle("RunningEveryday")
             .setContentIntent(pendingIntent)
             .setSmallIcon(R.drawable.running_everyday)
-            .setAutoCancel(true)
             .setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE)
-            .setDefaults(Notification.DEFAULT_ALL)
-            .setOngoing(true)
+            //.setDefaults(Notification.DEFAULT_ALL)
     }
 
     fun getNotification() : Notification {
@@ -86,6 +84,7 @@ class NotificationHelper(val context: Context, private var targetDistance: Float
     }
 
     fun completeNotification(curTime: Int) {
+        handler.removeCallbacks(runnable)
         vibrator = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
         val timings = longArrayOf(100, 1000, 100)
         val amplitudes = intArrayOf(0, 100, 0)
