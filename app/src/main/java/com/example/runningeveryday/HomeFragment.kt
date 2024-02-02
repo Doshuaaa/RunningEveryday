@@ -113,7 +113,6 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        val locationManager: LocationManager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         var curLocation: Location? = null
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
         try {
@@ -144,7 +143,7 @@ class HomeFragment : Fragment() {
     }
 
 
-    fun setWeather(nx : String, ny : String) {
+    private fun setWeather(nx : String, ny : String) {
 
         val cal = Calendar.getInstance()
         base_date = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(cal.time)
@@ -165,7 +164,7 @@ class HomeFragment : Fragment() {
         call.enqueue(object : retrofit2.Callback<Weather> {
             override fun onResponse(call: Call<Weather>, response: Response<Weather>) {
                 if(response.isSuccessful) {
-                    var list: List<Weather.Item> = response.body()!!.response.body.items.item
+                    val list: List<Weather.Item> = response.body()!!.response.body.items.item
 
                     var rainRatio = ""      // 강수 확률
                     var rainType = ""       // 강수 형태
@@ -180,7 +179,7 @@ class HomeFragment : Fragment() {
                             "TMP" -> temp = list[i].fcstValue
                         }
                     }
-                    setWeather(rainRatio, rainType, sky, temp)
+                    setWeather(rainRatio, rainType, sky, temp, time)
                 }
             }
 
@@ -190,7 +189,7 @@ class HomeFragment : Fragment() {
         })
     }
 
-    private fun setWeather(rainRatio: String, rainType: String, sky: String, temp: String) {
+    private fun setWeather(rainRatio: String, rainType: String, sky: String, temp: String, hour: String) {
 
         binding.popTextView.text = getString(R.string.pop, rainRatio)
         var type = ""
@@ -217,11 +216,21 @@ class HomeFragment : Fragment() {
             when(sky) {
                 "1" -> {
                     type = "맑음"
-                    binding.weatherImageView.setImageResource(R.drawable.sun)
+                    if(hour.toInt() in 6..18) {
+                        binding.weatherImageView.setImageResource(R.drawable.sun)
+                    }
+                    else {
+                        binding.weatherImageView.setImageResource(R.drawable.moon)
+                    }
                 }
                 "3" -> {
                     type = "구름 많음"
-                    binding.weatherImageView.setImageResource(R.drawable.clouds_and_sun)
+                    if(hour.toInt() in 6..18) {
+                        binding.weatherImageView.setImageResource(R.drawable.clouds_and_sun)
+                    }
+                    else {
+                        binding.weatherImageView.setImageResource(R.drawable.clouds_and_moon)
+                    }
                 }
                 "4" -> {
                     type = "흐림"
@@ -439,6 +448,10 @@ class HomeFragment : Fragment() {
             val list = task.documents
             list.reverse()
             for(document in list) {
+
+                if(calendar.get(Calendar.DAY_OF_MONTH) == 1 && dateFormat.format(calendar.time) != document.id) {
+                    calendar.add(Calendar.DAY_OF_MONTH, -1)
+                }
 
                 if(dateFormat.format(calendar.time) == document.id) {
                     val dayList = document.data

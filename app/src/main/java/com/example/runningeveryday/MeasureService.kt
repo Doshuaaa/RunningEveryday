@@ -98,13 +98,13 @@ class MeasureService : Service(), CoroutineScope {
         locationManager.removeUpdates(locationListener)
         stopForeground(STOP_FOREGROUND_DETACH)
         helper.notificationCancel()
-        wakeLock.release()
+       // wakeLock.release()
     }
 
-    private val wakeLock: PowerManager.WakeLock by lazy {
-        (getSystemService(Context.POWER_SERVICE) as PowerManager)
-            .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "RunningEveryday::MeasureWakelock")
-    }
+//    private val wakeLock: PowerManager.WakeLock by lazy {
+//        (getSystemService(Context.POWER_SERVICE) as PowerManager)
+//            .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "RunningEveryday::MeasureWakelock")
+//    }
 
 
     override fun onBind(intent: Intent): IBinder {
@@ -113,7 +113,7 @@ class MeasureService : Service(), CoroutineScope {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        wakeLock.acquire(60*60*1000L /*1 hour*/)
+        //wakeLock.acquire(60*60*1000L /*1 hour*/)
         intent?.extras?.apply {
             targetDistance = getFloat(SELECT_DISTANCE, 0f)
             when(getSerializable(SERVICE_COMMAND, MeasureState::class.java)) {
@@ -130,9 +130,9 @@ class MeasureService : Service(), CoroutineScope {
         handler.removeCallbacks(runnable)
         locationManager.removeUpdates(locationListener)
         helper.notificationCancel()
-        if(wakeLock.isHeld) {
-            wakeLock.release()
-        }
+//        if(wakeLock.isHeld) {
+//            wakeLock.release()
+//        }
 
         job.cancel()
     }
@@ -164,7 +164,7 @@ class MeasureService : Service(), CoroutineScope {
         handler.removeCallbacks(runnable)
         locationManager.removeUpdates(locationListener)
         stopForeground(STOP_FOREGROUND_DETACH)
-        wakeLock.release()
+        //wakeLock.release()
         currentTime = 0
         helper.notificationCancel()
     }
