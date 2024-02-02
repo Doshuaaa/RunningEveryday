@@ -1,12 +1,20 @@
 package com.example.runningeveryday
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.ConnectivityManager.NetworkCallback
+import android.net.Network
+import android.net.NetworkRequest
 import android.os.Bundle
+import android.view.View
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.example.runningeveryday.databinding.ActivityLoginBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -18,6 +26,50 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 
+object CheckNetwork {
+
+    private lateinit var networkCallback: NetworkCallback
+    private lateinit var connectivityManager: ConnectivityManager
+    private lateinit var  networkDialog: AlertDialog
+    fun registerNetworkCallback(context: Context, view: View) {
+        networkDialog = AlertDialog.Builder(context).create()
+        networkCallback  = object : ConnectivityManager.NetworkCallback() {
+
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                if(networkDialog.isShowing) {
+                    view.post {
+                        networkDialog.dismiss()
+                    }
+                }
+            }
+
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                networkDialog.apply {
+                    setMessage("네트워크 연결을 확인해주세요.")
+                    setCancelable(false)
+                }
+                view.post {
+                    networkDialog.show()
+                }
+            }
+        }
+
+        connectivityManager  = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkBuilder = NetworkRequest.Builder()
+        connectivityManager.registerNetworkCallback(networkBuilder.build(), networkCallback)
+    }
+    fun unregisterNetworkCallback(view: View) {
+        if(networkDialog.isShowing) {
+            view.post {
+                networkDialog.dismiss()
+            }
+        }
+        connectivityManager.unregisterNetworkCallback(networkCallback)
+    }
+}
+
 class LoginActivity : AppCompatActivity() {
 
     private var viewBinding: ActivityLoginBinding? = null
@@ -26,11 +78,17 @@ class LoginActivity : AppCompatActivity() {
     private val auth by lazy { FirebaseAuth.getInstance() }
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
+    private lateinit var mContext: Context
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mContext = this
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         viewBinding = ActivityLoginBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
+        CheckNetwork.registerNetworkCallback(this, binding.root)
+
         setResultSingUp()
         auth.signOut()
         if(auth.currentUser != null) {
@@ -99,4 +157,5 @@ class LoginActivity : AppCompatActivity() {
             collectionReference.document(auth.uid!!).set(emptyData)
         }
     }
+
 }

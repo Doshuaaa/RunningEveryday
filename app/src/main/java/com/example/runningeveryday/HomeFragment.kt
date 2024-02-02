@@ -70,7 +70,7 @@ class HomeFragment : Fragment() {
     private var curPoint: Point? = null
 
     private var viewBinding: FragmentHomeBinding? = null
-    private val binding: FragmentHomeBinding get() = viewBinding!!
+    private val binding: FragmentHomeBinding by lazy { viewBinding!! }
     private lateinit var loadingDialog : LoadingDialog
 
     private var loadCount = 0
@@ -86,7 +86,9 @@ class HomeFragment : Fragment() {
     private val dlgDismissHandler = Handler(Looper.getMainLooper())
     private val runnable = Runnable {
         if(loadCount == 3) {
-            loadingDialog.dismiss()
+            if(loadingDialog.window != null) {
+                loadingDialog.dismiss()
+            }
         }
     }
 
@@ -103,7 +105,7 @@ class HomeFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-        viewBinding = FragmentHomeBinding.inflate(layoutInflater)
+
         loadingDialog = LoadingDialog(mContext)
         loadingDialog.show()
     }
@@ -112,7 +114,7 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
+        viewBinding = FragmentHomeBinding.inflate(layoutInflater)
         var curLocation: Location? = null
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
         try {
@@ -138,10 +140,13 @@ class HomeFragment : Fragment() {
             val intent = Intent(mContext, SettingActivity::class.java)
             startActivity(intent)
         }
-
         return binding.root
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        loadingDialog.dismiss()
+    }
 
     private fun setWeather(nx : String, ny : String) {
 
@@ -191,7 +196,9 @@ class HomeFragment : Fragment() {
 
     private fun setWeather(rainRatio: String, rainType: String, sky: String, temp: String, hour: String) {
 
-        binding.popTextView.text = getString(R.string.pop, rainRatio)
+        if(activity != null) {
+            binding.popTextView.text = getString(R.string.pop, rainRatio)
+        }
         var type = ""
         when(rainType) {
             "0" -> {
@@ -239,7 +246,9 @@ class HomeFragment : Fragment() {
             }
         }
 
-        binding.tempTextView.text = getString(R.string.temp, temp)
+        if(activity != null) {
+            binding.tempTextView.text = getString(R.string.temp, temp)
+        }
         binding.weatherTextView.text = type
 
         val documentReference = fireStore.collection("users")
@@ -470,7 +479,9 @@ class HomeFragment : Fragment() {
                     }
                 }
             }
-            binding.streakTextView.text = getString(R.string.streak, streak)
+            if(activity != null) {
+                binding.streakTextView.text = getString(R.string.streak, streak)
+            }
             loadCount++
             dlgDismissHandler.post(runnable)
         }
