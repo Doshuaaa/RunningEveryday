@@ -1,5 +1,6 @@
 package com.example.runningeveryday
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -33,7 +34,12 @@ class Stats3000Fragment : Fragment() {
     private val binding get() = viewBinding!!
     private lateinit var top10List  : List<Pair<String, Any>>
     private lateinit var loadingDialog: LoadingDialog
+    private lateinit var mContext: Context
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mContext = context
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -49,6 +55,11 @@ class Stats3000Fragment : Fragment() {
         viewBinding = FragmentStats3000Binding.inflate(layoutInflater)
         loadingDialog = LoadingDialog(requireContext())
         loadingDialog.show()
+//        if(!CheckNetwork.checkNetworkState(mContext)) {
+//            CheckNetwork.showNetworkLostDialog(binding.root)
+//            loadingDialog.dismiss()
+//        }
+//        CheckNetwork.registerFragmentNetworkCallback(this,  binding.root)
         setTop10List()
         return binding.root
     }

@@ -42,7 +42,6 @@ object CheckNetwork {
         }
     }
 
-    //여기가 문제인듯?
     fun checkNetworkState(context: Context) : Boolean {
 
         val connectivityManager: ConnectivityManager =
@@ -66,7 +65,7 @@ object CheckNetwork {
         }
     }
 
-    fun registerActivityNetworkCallback(activity: Activity, view: View, context: Context) {
+    fun registerActivityNetworkCallback(activity: Activity, view: View) {
         networkCallback  = object : ConnectivityManager.NetworkCallback() {
 
             override fun onAvailable(network: Network) {
@@ -79,22 +78,6 @@ object CheckNetwork {
                     activity.baseContext.startActivity(activity.intent)
                 }
             }
-
-            override fun onLost(network: Network) {
-                super.onLost(network)
-
-
-                if(!checkNetworkState(context)) {
-                    //showNetworkLostDialog(view)
-
-                    // wifi -> 데이터 전환시 onLost() 다음으로 onAvailable 호출 하지 않아서
-//                    if(checkNetworkState(activity.baseContext)) {
-//                        view.post {
-//                            networkDialog.dismiss()
-//                        }
-//                    }
-                }
-            }
         }
 
         connectivityManager  = activity.baseContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -102,7 +85,7 @@ object CheckNetwork {
         connectivityManager.registerNetworkCallback(networkBuilder.build(), networkCallback)
     }
 
-    fun registerFragmentNetworkCallback(fragment: Fragment, context: Context, view: View) {
+    fun registerFragmentNetworkCallback(fragment: Fragment, view: View) {
         networkCallback  = object : ConnectivityManager.NetworkCallback() {
 
             override fun onAvailable(network: Network) {
@@ -112,23 +95,9 @@ object CheckNetwork {
                         networkDialog.dismiss()
                         fragment.activity?.supportFragmentManager?.beginTransaction()?.detach(fragment)?.commit()
                         fragment.activity?.supportFragmentManager?.beginTransaction()?.attach(fragment)?.commit()
+                        //MainActivity.setFragment(fragment)
                     }
                     //MainActivity.setFragment(fragment)
-                }
-            }
-
-            override fun onLost(network: Network) {
-                super.onLost(network)
-                if(!checkNetworkState(context)) {
-                    networkDialog.apply {
-                        setMessage("네트워크 연결을 확인해주세요.")
-                        setCancelable(false)
-                    }
-                    if (!networkDialog.isShowing) {
-                        view.post {
-                            networkDialog.show()
-                        }
-                    }
                 }
             }
         }
@@ -170,7 +139,7 @@ class LoginActivity : AppCompatActivity() {
         if(!CheckNetwork.checkNetworkState(this)) {
             CheckNetwork.showNetworkLostDialog(binding.root)
         }
-        CheckNetwork.registerActivityNetworkCallback(this, binding.root, this)
+        CheckNetwork.registerActivityNetworkCallback(this, binding.root)
 
         setResultSingUp()
         auth.signOut()

@@ -100,21 +100,22 @@ class HomeFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-        viewBinding = FragmentHomeBinding.inflate(layoutInflater)
-
-        if(!CheckNetwork.checkNetworkState(mContext)) {
-            CheckNetwork.showNetworkLostDialog(binding.root)
-        }
-        CheckNetwork.registerFragmentNetworkCallback(this, mContext, binding.root)
-
-        loadingDialog = LoadingDialog(mContext)
-        loadingDialog.show()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        loadCount = 0
+        streak = 0
+        loadingDialog = LoadingDialog(mContext)
+        loadingDialog.show()
+        viewBinding = FragmentHomeBinding.inflate(layoutInflater)
+        if(!CheckNetwork.checkNetworkState(mContext)) {
+            CheckNetwork.showNetworkLostDialog(binding.root)
+            loadingDialog.dismiss()
+        }
+        CheckNetwork.registerFragmentNetworkCallback(this,  binding.root)
 
         var curLocation: Location? = null
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)

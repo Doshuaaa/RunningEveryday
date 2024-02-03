@@ -95,7 +95,11 @@ class MeasureFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         viewBinding = FragmentMeasureBinding.inflate(layoutInflater)
-
+        if(!CheckNetwork.checkNetworkState(mainActivity)) {
+            CheckNetwork.showNetworkLostDialog(binding.root)
+            //loadingDialog.dismiss()
+        }
+        CheckNetwork.registerFragmentNetworkCallback(this,  binding.root)
         binding.distanceSpinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, distanceArray)
         binding.distanceSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {

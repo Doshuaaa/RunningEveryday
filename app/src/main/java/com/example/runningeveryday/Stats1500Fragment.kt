@@ -56,6 +56,11 @@ class Stats1500Fragment : Fragment() {
         loadingDialog = LoadingDialog(mContext)
         loadingDialog.show()
         viewBinding = FragmentStats1500Binding.inflate(layoutInflater)
+//        if(!CheckNetwork.checkNetworkState(mContext)) {
+//            CheckNetwork.showNetworkLostDialog(binding.root)
+//            loadingDialog.dismiss()
+//        }
+//        CheckNetwork.registerFragmentNetworkCallback(this,  binding.root)
         setTop10List()
 
         return binding.root

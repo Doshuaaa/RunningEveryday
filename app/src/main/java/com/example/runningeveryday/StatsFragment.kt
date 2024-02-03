@@ -1,5 +1,6 @@
 package com.example.runningeveryday
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -30,6 +31,11 @@ class StatsFragment : Fragment() {
 
     private var viewBinding: FragmentStatsBinding? = null
     private val binding get() = viewBinding!!
+    private lateinit var mContext: Context
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mContext = context
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +51,10 @@ class StatsFragment : Fragment() {
     ): View {
 
         viewBinding = FragmentStatsBinding.inflate(layoutInflater)
+        if(!CheckNetwork.checkNetworkState(mContext)) {
+            CheckNetwork.showNetworkLostDialog(binding.root)
+            //loadingDialog.dismiss()
+        }
         initViewPager()
         return binding.root
     }
