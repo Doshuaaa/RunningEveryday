@@ -1,13 +1,9 @@
 package com.example.runningeveryday
 
-import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Point
-import android.graphics.drawable.ColorDrawable
-import android.icu.util.LocaleData
 import android.location.Location
-import android.location.LocationManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -20,7 +16,6 @@ import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.runningeveryday.adapter.MonthAdapter
-import com.example.runningeveryday.databinding.DialogProgressBinding
 import com.example.runningeveryday.databinding.FragmentHomeBinding
 import com.example.runningeveryday.dialog.LoadingDialog
 import com.example.runningeveryday.model.Weather
@@ -35,7 +30,6 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.Calendar
 import java.util.Locale
 
@@ -98,6 +92,7 @@ class HomeFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context
+        CheckNetwork.initNetworkLostDialog(mContext)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,6 +100,12 @@ class HomeFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        viewBinding = FragmentHomeBinding.inflate(layoutInflater)
+
+        if(!CheckNetwork.checkNetworkState(mContext)) {
+            CheckNetwork.showNetworkLostDialog(binding.root)
+        }
+        CheckNetwork.registerFragmentNetworkCallback(this, mContext, binding.root)
 
         loadingDialog = LoadingDialog(mContext)
         loadingDialog.show()
@@ -114,7 +115,7 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewBinding = FragmentHomeBinding.inflate(layoutInflater)
+
         var curLocation: Location? = null
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
         try {
@@ -275,7 +276,7 @@ class HomeFragment : Fragment() {
 
                         documentReference.update(streakData as Map<String, Any>)
                         --loadCount
-                        calRecyclerView.onFlingListener = null
+                        //calRecyclerView.onFlingListener = null
                         initCalendar()
                     }
                 }
@@ -339,6 +340,7 @@ class HomeFragment : Fragment() {
 
     private fun initCalendar() {
 
+        calRecyclerView.onFlingListener = null
         calRecyclerView.adapter = MonthAdapter(mContext)
         calRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         calRecyclerView.scrollToPosition(calPosition)

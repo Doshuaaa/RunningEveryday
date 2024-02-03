@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
             supportManager.commit {
                 replace(R.id.main_frame_layout, fragment)
-                // setReorderingAllowed(true)
+                 setReorderingAllowed(true)
             }
         }
     }
@@ -69,6 +69,7 @@ class MainActivity : AppCompatActivity() {
         supportManager = supportFragmentManager
 
         setContentView(binding.root)
+
         mainActivity = this
         checkRegisterInformation()
         activityResultLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {

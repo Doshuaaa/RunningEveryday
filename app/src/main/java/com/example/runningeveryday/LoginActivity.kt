@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
+import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Bundle
 import android.view.View
@@ -15,6 +16,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.fragment.app.Fragment
 import com.example.runningeveryday.databinding.ActivityLoginBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -31,8 +33,40 @@ object CheckNetwork {
     private lateinit var networkCallback: NetworkCallback
     private lateinit var connectivityManager: ConnectivityManager
     private lateinit var  networkDialog: AlertDialog
-    fun registerNetworkCallback(context: Context, view: View) {
+
+    fun initNetworkLostDialog(context: Context)  {
         networkDialog = AlertDialog.Builder(context).create()
+        networkDialog.apply {
+            setMessage("네트워크 연결을 확인해주세요.")
+            setCancelable(false)
+        }
+    }
+
+    //여기가 문제인듯?
+    fun checkNetworkState(context: Context) : Boolean {
+
+        val connectivityManager: ConnectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val actNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+
+        return when {
+            actNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            actNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            else -> false
+        }
+    }
+
+    fun showNetworkLostDialog(view: View) {
+
+        if(!networkDialog.isShowing) {
+            view.post {
+                networkDialog.show()
+            }
+        }
+    }
+
+    fun registerActivityNetworkCallback(activity: Activity, view: View, context: Context) {
         networkCallback  = object : ConnectivityManager.NetworkCallback() {
 
             override fun onAvailable(network: Network) {
@@ -41,25 +75,69 @@ object CheckNetwork {
                     view.post {
                         networkDialog.dismiss()
                     }
+                    activity.finish()
+                    activity.baseContext.startActivity(activity.intent)
                 }
             }
 
             override fun onLost(network: Network) {
                 super.onLost(network)
-                networkDialog.apply {
-                    setMessage("네트워크 연결을 확인해주세요.")
-                    setCancelable(false)
-                }
-                view.post {
-                    networkDialog.show()
+
+
+                if(!checkNetworkState(context)) {
+                    //showNetworkLostDialog(view)
+
+                    // wifi -> 데이터 전환시 onLost() 다음으로 onAvailable 호출 하지 않아서
+//                    if(checkNetworkState(activity.baseContext)) {
+//                        view.post {
+//                            networkDialog.dismiss()
+//                        }
+//                    }
                 }
             }
         }
 
-        connectivityManager  = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        connectivityManager  = activity.baseContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkBuilder = NetworkRequest.Builder()
         connectivityManager.registerNetworkCallback(networkBuilder.build(), networkCallback)
     }
+
+    fun registerFragmentNetworkCallback(fragment: Fragment, context: Context, view: View) {
+        networkCallback  = object : ConnectivityManager.NetworkCallback() {
+
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                if(networkDialog.isShowing) {
+                    view.post {
+                        networkDialog.dismiss()
+                        fragment.activity?.supportFragmentManager?.beginTransaction()?.detach(fragment)?.commit()
+                        fragment.activity?.supportFragmentManager?.beginTransaction()?.attach(fragment)?.commit()
+                    }
+                    //MainActivity.setFragment(fragment)
+                }
+            }
+
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                if(!checkNetworkState(context)) {
+                    networkDialog.apply {
+                        setMessage("네트워크 연결을 확인해주세요.")
+                        setCancelable(false)
+                    }
+                    if (!networkDialog.isShowing) {
+                        view.post {
+                            networkDialog.show()
+                        }
+                    }
+                }
+            }
+        }
+
+        connectivityManager  = fragment.context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkBuilder = NetworkRequest.Builder()
+        connectivityManager.registerNetworkCallback(networkBuilder.build(), networkCallback)
+    }
+
     fun unregisterNetworkCallback(view: View) {
         if(networkDialog.isShowing) {
             view.post {
@@ -87,7 +165,12 @@ class LoginActivity : AppCompatActivity() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         viewBinding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        CheckNetwork.registerNetworkCallback(this, binding.root)
+        CheckNetwork.initNetworkLostDialog(this)
+
+        if(!CheckNetwork.checkNetworkState(this)) {
+            CheckNetwork.showNetworkLostDialog(binding.root)
+        }
+        CheckNetwork.registerActivityNetworkCallback(this, binding.root, this)
 
         setResultSingUp()
         auth.signOut()
@@ -112,6 +195,11 @@ class LoginActivity : AppCompatActivity() {
         (binding.googleSignInButton.getChildAt(0) as TextView).text = "구글로 로그인 하기"
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        //CheckNetwork.unregisterNetworkCallback(binding.root)
+    }
+
     private fun signIn() {
         val signIntent: Intent = googleSignInClient.signInIntent
         resultLauncher.launch(signIntent)
@@ -133,8 +221,9 @@ class LoginActivity : AppCompatActivity() {
             if(it.isSuccessful) {
                 initUid()
                 val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
                 finish()
+                startActivity(intent)
+
             }
         }
     }
