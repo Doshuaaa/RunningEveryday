@@ -1,14 +1,18 @@
 package com.example.runningeveryday
 
+import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.example.runningeveryday.adapter.StandardAdapter
+import com.example.runningeveryday.databinding.DialogStatsStandardBinding
 import com.example.runningeveryday.databinding.FragmentStatsBinding
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
@@ -53,9 +57,14 @@ class StatsFragment : Fragment() {
         viewBinding = FragmentStatsBinding.inflate(layoutInflater)
         if(!CheckNetwork.checkNetworkState(mContext)) {
             CheckNetwork.showNetworkLostDialog(binding.root)
-            //loadingDialog.dismiss()
         }
+        CheckNetwork.registerFragmentNetworkCallback(this,  binding.root)
         initViewPager()
+
+        binding.statsStandardInfoImageButton.setOnClickListener {
+            StatsStandardDialog().show()
+        }
+
         return binding.root
     }
 
@@ -118,4 +127,37 @@ class StatsFragment : Fragment() {
                 }
             }
     }
+
+    inner class StatsStandardDialog : Dialog(mContext) {
+
+
+        private var dialogViewBinding: DialogStatsStandardBinding? = null
+        private val dialogBinding get() = dialogViewBinding!!
+
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+            dialogViewBinding = DialogStatsStandardBinding.inflate(layoutInflater)
+            setContentView(dialogBinding.root)
+            window?.setBackgroundDrawableResource(R.drawable.round_dialog)
+            val list1500 = Record().getGradeStandard(MainActivity.sex, MainActivity.age, 1500)
+            val list3000 = Record().getGradeStandard(MainActivity.sex, MainActivity.age, 3000)
+
+            dialogBinding.statsStandard1500RecyclerView.apply {
+                adapter = StandardAdapter(list1500)
+                layoutManager = LinearLayoutManager(mContext)
+            }
+
+            dialogBinding.statsStandard3000RecyclerView.apply {
+                adapter = StandardAdapter(list3000)
+                layoutManager = LinearLayoutManager(mContext)
+            }
+
+            dialogBinding.dismissStandardDialog.setOnClickListener {
+                dismiss()
+            }
+
+        }
+    }
 }
+
+

@@ -128,7 +128,7 @@ class Stats3000Fragment : Fragment() {
             )
 
             val decoration = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-            binding.top10Of1500RecyclerView.apply {
+            binding.top10Of3000RecyclerView.apply {
                 adapter = RecordAdapter(top10List, 3000)
                 layoutManager = LinearLayoutManager(requireContext())
                 addItemDecoration(decoration)

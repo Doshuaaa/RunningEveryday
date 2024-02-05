@@ -54,7 +54,7 @@ class MeasureService : Service(), CoroutineScope {
 //        .document("${calendar.get(Calendar.YEAR)}${calendar.get((Calendar.MONTH))}")
 //        .collection(targetDistance.toString())
 
-    private val locationManager by lazy { getSystemService(Context.LOCATION_SERVICE) as LocationManager}
+    private val locationManager by lazy { getSystemService(Context.LOCATION_SERVICE) as LocationManager }
     private var lastLocation: Location? = null
     private val handler = Handler(Looper.getMainLooper())
     private val runnable = object : Runnable {
@@ -80,10 +80,24 @@ class MeasureService : Service(), CoroutineScope {
             broadcastDistanceUpdate()
             if(totalDistance >= targetDistance) {
 
-                record()
+                helper.completeNotification(currentTime)
+                ////////
+                if(CheckNetwork.checkNetworkState(baseContext)) {
+                    record()
+                }
+                else {
+                    val sharedPreferences = getSharedPreferences("saved record", Context.MODE_PRIVATE)
+                    sharedPreferences.edit().apply {
+                        putBoolean("exist", true).apply()
+                        putInt("time", currentTime).apply()
+                        putFloat("target distance", targetDistance)
+                    }
+                }
+                ////////
+
                 //measureStop()
                 measureComplete()
-                helper.completeNotification(currentTime)
+
             }
         }
     }
@@ -189,11 +203,6 @@ class MeasureService : Service(), CoroutineScope {
             helper.notificationCancel()
         }
     }
-
-    private fun getGrade() {
-
-    }
-
     private fun record() {
 
         val documentReference =
@@ -219,7 +228,7 @@ class MeasureService : Service(), CoroutineScope {
 
 
         documentReference.collection(calendar.get(Calendar.DAY_OF_MONTH).toString())
-            .document(targetDistance.toString()).set(timeData as Map<String, Any>)
+            .document(targetDistance.toInt().toString()).set(timeData as Map<String, Any>)
 
 
 
@@ -267,5 +276,4 @@ class MeasureService : Service(), CoroutineScope {
             }
         }
     }
-
 }

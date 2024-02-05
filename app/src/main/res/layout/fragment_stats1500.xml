@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone">
         
         <TextView
             android:layout_width="wrap_content"
@@ -46,8 +47,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="나의 커리어하이"
+                android:textStyle="bold"
                 android:layout_marginBottom="20dp"
-                android:textSize="24sp"/>
+                android:textSize="30sp"
+                android:fontFamily="@font/omyu_pretty"/>
 
 
             <ImageView
@@ -99,15 +102,66 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#2E2D2D"/>
+                android:layout_height="3dp"
+                android:background="#4FC3F7"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Top 10 기록"
-                android:textSize="24sp"
-                android:layout_margin="20dp"/>
+                android:text="@string/top_10_measure"
+                android:textSize="30sp"
+                android:layout_margin="20dp"
+                android:textStyle="bold"
+                android:fontFamily="@font/omyu_pretty"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="5">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/ranking"
+                    android:gravity="center"
+                    android:textSize="22sp"
+                    android:padding="10dp"
+                    android:fontFamily="@font/omyu_pretty"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="@string/measure_date"
+                    android:textSize="22sp"
+                    android:gravity="center"
+                    android:fontFamily="@font/omyu_pretty"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/measure_time"
+                    android:textSize="22sp"
+                    android:gravity="center"
+                    android:fontFamily="@font/omyu_pretty"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/grade"
+                    android:textSize="22sp"
+                    android:gravity="center"
+                    android:fontFamily="@font/omyu_pretty"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/black"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/top10_of_1500_recycler_view"

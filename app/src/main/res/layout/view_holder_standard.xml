@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:weightSum="5">
+
+    <TextView
+        android:id="@+id/standard_grade_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.5"
+        android:text="불합격"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:fontFamily="@font/omyu_pretty"/>
+
+    <TextView
+        android:id="@+id/standard_start_range_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.5"
+        android:text="19 : 30"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:fontFamily="@font/omyu_pretty"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:text="~"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:fontFamily="@font/omyu_pretty"/>
+
+    <TextView
+        android:id="@+id/standard_end_range_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.5"
+        android:text="19 : 30"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:fontFamily="@font/omyu_pretty"/>
+
+</LinearLayout>

@@ -71,7 +71,7 @@ class NotificationHelper(val context: Context, private var targetDistance: Float
 
 
         notificationBuilder.setContentText(
-            "시간: ${curTime / 60} : ${curTime % 60}\n  거리: ${
+            "시간: ${curTime / 60} : ${curTime % 60}\n거리: ${
                 String.format(
                     "%.2f",
                     curDistance / 1000.0
@@ -95,7 +95,7 @@ class NotificationHelper(val context: Context, private var targetDistance: Float
             .build()
         vibrator?.vibrate(combinedVibration, audioAttributes)
         //vibrator.cancel()
-        notificationBuilder.setContentText("${String.format("%2f", targetDistance / 1000.0)}m 측정 완료!  <걸린 시간: ${curTime / 60} : ${curTime % 60}>")
+        notificationBuilder.setContentText("${String.format("%.2f", targetDistance / 1000.0)}m 측정 완료!  <걸린 시간: ${curTime / 60} : ${curTime % 60}>")
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
     }
 

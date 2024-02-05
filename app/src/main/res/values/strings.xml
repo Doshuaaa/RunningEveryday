@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RunningEveryday</string>
+    <string name="app_name">런닝 에브리데이</string>
     <string name="home">홈</string>
     <string name="measure">기록 측정</string>
     <string name="record">나의 기록</string>
@@ -8,7 +8,7 @@
     <string name="current_distance">0.00</string>
     <string name="max_distance">3.00 km</string>
     <string name="_00">00 : 00</string>
-    <string name="running_everyday">RunningEveryday</string>
+    <string name="running_everyday">Running Everyday</string>
     <string name="running_everytime">Running Everyday</string>
     <string name="pop">강수확률: %1s%%</string>
     <string name="temp">%1s℃</string>
@@ -20,4 +20,9 @@
     <string name="streak">%1d일째 스트릭 기록중!</string>
     <string name="go_to_set_permission">위치 권한 \'항상 허용\' 여부 </string>
     <string name="go_to_set_gps">gps 활성화 여부</string>
+    <string name="ranking">순위</string>
+    <string name="measure_date">측정 날짜</string>
+    <string name="measure_time">시간</string>
+    <string name="grade">등급</string>
+    <string name="top_10_measure">Top 10 기록</string>
 </resources>

@@ -276,7 +276,7 @@ class MeasureFragment : Fragment() {
 
 
         documentReference.collection(calendar.get(Calendar.DAY_OF_MONTH).toString())
-            .document(targetDistance.toString()).set(timeData as Map<String, Any>)
+            .document(targetDistance.toInt().toString()).set(timeData as Map<String, Any>)
 
 
         val top10Reference =
