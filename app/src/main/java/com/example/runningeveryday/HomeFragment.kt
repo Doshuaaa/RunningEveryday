@@ -279,6 +279,8 @@ class HomeFragment : Fragment() {
                         --loadCount
                         //calRecyclerView.onFlingListener = null
                         initCalendar()
+                        --loadCount
+                        getStreak()
                     }
                 }
             } else {
@@ -448,7 +450,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun getStreak() {
-
+        streak = 0
         val calendar = Calendar.getInstance()
         val dateFormat = SimpleDateFormat("YYYYMM", Locale.KOREA)
 

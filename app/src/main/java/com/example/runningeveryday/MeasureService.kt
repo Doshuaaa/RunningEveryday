@@ -90,7 +90,8 @@ class MeasureService : Service(), CoroutineScope {
                     sharedPreferences.edit().apply {
                         putBoolean("exist", true).apply()
                         putInt("time", currentTime).apply()
-                        putFloat("target distance", targetDistance)
+                        putFloat("target distance", targetDistance).apply()
+                        putLong("date", calendar.timeInMillis)
                     }
                 }
                 ////////

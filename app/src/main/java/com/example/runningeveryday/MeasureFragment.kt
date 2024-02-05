@@ -100,6 +100,9 @@ class MeasureFragment : Fragment() {
             //loadingDialog.dismiss()
         }
         CheckNetwork.registerFragmentNetworkCallback(this,  binding.root)
+
+        isExistTS()
+
         binding.distanceSpinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, distanceArray)
         binding.distanceSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
@@ -156,7 +159,7 @@ class MeasureFragment : Fragment() {
                         //mainViewModel.isForegroundServiceRunning = false
                         binding.distanceSpinner.isEnabled = true
                         sendCommandToForegroundService(MeasureState.STOP)
-                        record()
+                        //record()
                     })
                     setNegativeButton("측정 계속하기",  null)
                 }
@@ -190,6 +193,40 @@ class MeasureFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+    }
+
+    private fun isExistTS() {
+        val sharedPreferences = requireContext().getSharedPreferences("saved record", Context.MODE_PRIVATE)
+        val timeFormat = SimpleDateFormat("yyyy년 M월 dd일", Locale.KOREA)
+
+        if(sharedPreferences.getBoolean("exist", false)) {
+            val time = sharedPreferences.getInt("time", 0)
+            val distance = sharedPreferences.getFloat("target distance", 0f)
+            val distanceStr = String.format("%.2f", distance / 1000.0)
+
+            val date = sharedPreferences.getLong("date", 0L)
+            val dateStr = timeFormat.format(date.toInt())
+
+            val dialog = AlertDialog.Builder(requireContext())
+
+            dialog.apply {
+                setMessage("인터넷 문제로 인해 저장되지 못한 기록이 있어요.\n" +
+                        "${distanceStr}km\n" +
+                        "${dateStr}  ${Record().timeFormat(time.toLong())}\n" +
+                        "저장할까요?")
+            }
+            dialog.setPositiveButton("저장하기", DialogInterface.OnClickListener { _, _ ->
+
+                recordTS(date, time, distance)
+
+            })
+
+            dialog.setNegativeButton("저장하지 않고 지우기", DialogInterface.OnClickListener { _, _ ->
+
+                sharedPreferences.edit().putBoolean("exist", false).apply()
+
+            })
+        }
     }
 
     private fun sendCommandToForegroundService(state: MeasureState) {
@@ -245,6 +282,76 @@ class MeasureFragment : Fragment() {
         return String.format(Locale.KOREA, "%02d : %02d", minute, second)
     }
     ///////
+
+    private fun recordTS(date: Long, time: Int, distance: Float) {
+
+        val day = SimpleDateFormat("DD", Locale.KOREA).format(date).toString()
+        val documentReference =
+            fireStore.collection("users").document(auth.uid!!)
+                .collection("record")
+                .document(SimpleDateFormat("YYYYMM", Locale.KOREA).format(date).toString())
+
+        val dateData = hashMapOf(
+             day to "ok"
+        )
+
+        documentReference.get().addOnSuccessListener {
+            if(it.data == null) {
+                documentReference.set(dateData as Map<String, String>)
+            } else {
+                documentReference.update(dateData as Map<String, String>)
+            }
+        }
+
+        val timeData = hashMapOf(
+            "time" to time
+        )
+
+        documentReference.collection(day)
+            .document(distance.toInt().toString()).set(timeData as Map<String, Any>)
+
+        val top10Reference =
+            fireStore.collection("users").document(auth.uid!!)
+                .collection("top10").document(distance.toString())
+
+
+        top10Reference.get().addOnSuccessListener { task ->
+
+            val top10List: MutableList<MutableMap.MutableEntry<String, Any>> = try {
+                task?.data?.entries?.sortedByDescending { it.value as Long }?.toMutableList()!!
+            } catch (e: NullPointerException) {
+                mutableListOf()
+            }
+
+
+            val timeFormat = SimpleDateFormat("yyyy년 M월 dd일", Locale.KOREA)
+
+
+            if (top10List.size in 0..9) {
+                if (top10List.size == 0) {
+                    top10Reference.set(
+                        hashMapOf(
+                            timeFormat.format(date).toString() to time
+                        ) as Map<String, Any>
+                    )
+                } else {
+                    top10Reference.update(
+                        hashMapOf(
+                            timeFormat.format(date).toString() to time
+                        ) as Map<String, Any>
+                    )
+                }
+            } else {
+                if (time < top10List[0].value as Long) {
+                    top10List.removeAt(0)
+                    val map = top10List.associate { it.key to it.value }.toMutableMap()
+                    map[timeFormat.format(date).toString()] = time
+                    top10Reference.update(map)
+                }
+            }
+        }
+    }
+
     private fun record() {
         val targetDistance =
             when(selectPosition) {
