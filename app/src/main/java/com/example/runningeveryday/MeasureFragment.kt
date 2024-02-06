@@ -1,6 +1,7 @@
 package com.example.runningeveryday
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -30,11 +31,9 @@ import com.example.runningeveryday.databinding.DialogCountDownBinding
 import com.example.runningeveryday.databinding.FragmentMeasureBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.delay
 import java.lang.NullPointerException
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 import java.util.Timer
 import java.util.TimerTask
@@ -55,8 +54,6 @@ class MeasureFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-
-    private lateinit var mainActivity: Context
 
     private var viewBinding: FragmentMeasureBinding? = null
     private val binding get() = viewBinding!!
@@ -80,7 +77,7 @@ class MeasureFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        mainActivity = context
+        mContext = context
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,7 +92,7 @@ class MeasureFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         viewBinding = FragmentMeasureBinding.inflate(layoutInflater)
-        if(!CheckNetwork.checkNetworkState(mainActivity)) {
+        if(!CheckNetwork.checkNetworkState(mContext)) {
             CheckNetwork.showNetworkLostDialog(binding.root)
             //loadingDialog.dismiss()
         }
@@ -205,7 +202,7 @@ class MeasureFragment : Fragment() {
             val distanceStr = String.format("%.2f", distance / 1000.0)
 
             val date = sharedPreferences.getLong("date", 0L)
-            val dateStr = timeFormat.format(date.toInt())
+            val dateStr = timeFormat.format(date)
 
             val dialog = AlertDialog.Builder(requireContext())
 
@@ -218,6 +215,7 @@ class MeasureFragment : Fragment() {
             dialog.setPositiveButton("저장하기", DialogInterface.OnClickListener { _, _ ->
 
                 recordTS(date, time, distance)
+                sharedPreferences.edit().putBoolean("exist", false).apply()
 
             })
 
@@ -232,11 +230,11 @@ class MeasureFragment : Fragment() {
     }
 
     private fun sendCommandToForegroundService(state: MeasureState) {
-        ContextCompat.startForegroundService(mainActivity.applicationContext, getServiceIntent(state))
+        ContextCompat.startForegroundService(mContext.applicationContext, getServiceIntent(state))
     }
 
     private fun getServiceIntent(state: MeasureState) : Intent {
-        return Intent(mainActivity.applicationContext, MeasureService::class.java).apply {
+        return Intent(mContext.applicationContext, MeasureService::class.java).apply {
             putExtra(SERVICE_COMMAND, state)
 
             if(selectPosition == 0) {
@@ -287,7 +285,7 @@ class MeasureFragment : Fragment() {
 
     private fun recordTS(date: Long, time: Int, distance: Float) {
 
-        val day = SimpleDateFormat("DD", Locale.KOREA).format(date).toString()
+        val day = SimpleDateFormat("d", Locale.KOREA).format(date).toString()
         val documentReference =
             fireStore.collection("users").document(auth.uid!!)
                 .collection("record")
@@ -314,7 +312,7 @@ class MeasureFragment : Fragment() {
 
         val top10Reference =
             fireStore.collection("users").document(auth.uid!!)
-                .collection("top10").document(distance.toString())
+                .collection("top10").document(distance.toInt().toString())
 
 
         top10Reference.get().addOnSuccessListener { task ->
@@ -551,5 +549,7 @@ class MeasureFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+        @SuppressLint("StaticFieldLeak")
+        lateinit var mContext: Context
     }
 }

@@ -53,7 +53,7 @@ class Stats3000Fragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         viewBinding = FragmentStats3000Binding.inflate(layoutInflater)
-        loadingDialog = LoadingDialog(requireContext())
+        loadingDialog = LoadingDialog(mContext)
         loadingDialog.show()
 //        if(!CheckNetwork.checkNetworkState(mContext)) {
 //            CheckNetwork.showNetworkLostDialog(binding.root)
@@ -127,10 +127,10 @@ class Stats3000Fragment : Fragment() {
                 (top10List[0].second as Long % 60)
             )
 
-            val decoration = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+            val decoration = DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL)
             binding.top10Of3000RecyclerView.apply {
                 adapter = RecordAdapter(top10List, 3000)
-                layoutManager = LinearLayoutManager(requireContext())
+                layoutManager = LinearLayoutManager(mContext)
                 addItemDecoration(decoration)
             }
         } catch (e: UninitializedPropertyAccessException) {

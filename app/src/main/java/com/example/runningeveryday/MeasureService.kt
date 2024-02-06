@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -78,10 +79,9 @@ class MeasureService : Service(), CoroutineScope {
             lastLocation = location
 
             broadcastDistanceUpdate()
-            if(totalDistance >= 1f) {
+            if(totalDistance >= 20f) {
 
-                helper.completeNotification(currentTime)
-                ////////
+                helper.notificationCancel()
                 if(CheckNetwork.checkNetworkState(baseContext)) {
                     record()
                 }
@@ -94,9 +94,7 @@ class MeasureService : Service(), CoroutineScope {
                         putLong("date", calendar.timeInMillis).apply()
                     }
                 }
-                ////////
 
-                //measureStop()
                 measureComplete()
 
             }
@@ -112,7 +110,6 @@ class MeasureService : Service(), CoroutineScope {
         handler.removeCallbacks(runnable)
         locationManager.removeUpdates(locationListener)
         stopForeground(STOP_FOREGROUND_DETACH)
-        helper.notificationCancel()
        // wakeLock.release()
     }
 
@@ -128,6 +125,9 @@ class MeasureService : Service(), CoroutineScope {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
+        val dlg = AlertDialog.Builder(MeasureFragment.mContext)
+        dlg.setMessage("하이")
+        dlg.show()
         //wakeLock.acquire(60*60*1000L /*1 hour*/)
         intent?.extras?.apply {
             targetDistance = getFloat(SELECT_DISTANCE, 0f)
@@ -264,7 +264,6 @@ class MeasureService : Service(), CoroutineScope {
                         ) as Map<String, Any>
                     )
                 }
-                currentTime = 0
             }
             else {
                 if (currentTime < top10List[0].value as Long) {
@@ -273,8 +272,9 @@ class MeasureService : Service(), CoroutineScope {
                     map[timeFormat.format(calendar.time).toString()] = currentTime
                     top10Reference.update(map)
                 }
-                currentTime = 0
             }
+            helper.completeNotification(currentTime)
+            currentTime = 0
         }
     }
 }

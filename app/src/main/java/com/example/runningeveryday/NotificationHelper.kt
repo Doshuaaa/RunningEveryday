@@ -30,8 +30,8 @@ class NotificationHelper(val context: Context, private var targetDistance: Float
         //var isRunning = false
     }
 
-    val handler = Handler(Looper.getMainLooper())
-    val runnable = Runnable {
+    private val handler = Handler(Looper.getMainLooper())
+    private val runnable = Runnable {
         notificationManager.cancel(NOTIFICATION_ID)
     }
 
@@ -95,7 +95,7 @@ class NotificationHelper(val context: Context, private var targetDistance: Float
             .build()
         vibrator?.vibrate(combinedVibration, audioAttributes)
         //vibrator.cancel()
-        notificationBuilder.setContentText("${String.format("%.2f", targetDistance / 1000.0)}m 측정 완료!  <걸린 시간: ${curTime / 60} : ${curTime % 60}>")
+        notificationBuilder.setContentText("${String.format("%.1f", targetDistance / 1000.0)}km 측정 완료!  <걸린 시간: ${curTime / 60} : ${curTime % 60}>")
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
     }
 
