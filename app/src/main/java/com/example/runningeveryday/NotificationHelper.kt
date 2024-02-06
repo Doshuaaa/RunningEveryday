@@ -47,12 +47,18 @@ class NotificationHelper(val context: Context, private var targetDistance: Float
             .setContentIntent(pendingIntent)
             .setSmallIcon(R.drawable.running_everyday)
             .setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE)
+            .setAutoCancel(true)
+            .setOngoing(false)
             //.setDefaults(Notification.DEFAULT_ALL)
     }
 
     fun getNotification() : Notification {
         notificationManager.createNotificationChannel(createChannel())
         return notificationBuilder.build()
+    }
+
+    fun deleteNotificationChannel() {
+        notificationManager.deleteNotificationChannel(CHANNEL_ID)
     }
 
     private fun createChannel() : NotificationChannel {
@@ -78,7 +84,6 @@ class NotificationHelper(val context: Context, private var targetDistance: Float
                 )
             } / ${targetDistance}"
         )
-
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
 
     }
@@ -96,6 +101,7 @@ class NotificationHelper(val context: Context, private var targetDistance: Float
         vibrator?.vibrate(combinedVibration, audioAttributes)
         //vibrator.cancel()
         notificationBuilder.setContentText("${String.format("%.1f", targetDistance / 1000.0)}km 측정 완료!  <걸린 시간: ${curTime / 60} : ${curTime % 60}>")
+
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
     }
 

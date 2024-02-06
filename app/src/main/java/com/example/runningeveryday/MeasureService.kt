@@ -49,12 +49,6 @@ class MeasureService : Service(), CoroutineScope {
     private val auth = FirebaseAuth.getInstance()
     private val fireStore = FirebaseFirestore.getInstance()
 
-//    private val collectionReference =
-//        fireStore.collection("users").document(auth.uid!!)
-//        .collection("record")
-//        .document("${calendar.get(Calendar.YEAR)}${calendar.get((Calendar.MONTH))}")
-//        .collection(targetDistance.toString())
-
     private val locationManager by lazy { getSystemService(Context.LOCATION_SERVICE) as LocationManager }
     private var lastLocation: Location? = null
     private val handler = Handler(Looper.getMainLooper())
@@ -79,7 +73,7 @@ class MeasureService : Service(), CoroutineScope {
             lastLocation = location
 
             broadcastDistanceUpdate()
-            if(totalDistance >= 20f) {
+            if(totalDistance >= targetDistance) {
 
                 helper.notificationCancel()
                 if(CheckNetwork.checkNetworkState(baseContext)) {
@@ -93,10 +87,8 @@ class MeasureService : Service(), CoroutineScope {
                         putFloat("target distance", targetDistance).apply()
                         putLong("date", calendar.timeInMillis).apply()
                     }
+                    measureComplete()
                 }
-
-                measureComplete()
-
             }
         }
     }
@@ -105,11 +97,13 @@ class MeasureService : Service(), CoroutineScope {
         serviceState = MeasureState.STOP
         totalDistance = 0f
         targetDistance = 0f
-        //broadcastTimeUpdate()
-        //broadcastDistanceUpdate()
+        broadcastDistanceUpdate()
+        broadcastTimeUpdate()
         handler.removeCallbacks(runnable)
         locationManager.removeUpdates(locationListener)
         stopForeground(STOP_FOREGROUND_DETACH)
+        helper.completeNotification(currentTime)
+        currentTime = 0
        // wakeLock.release()
     }
 
@@ -125,9 +119,6 @@ class MeasureService : Service(), CoroutineScope {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        val dlg = AlertDialog.Builder(MeasureFragment.mContext)
-        dlg.setMessage("하이")
-        dlg.show()
         //wakeLock.acquire(60*60*1000L /*1 hour*/)
         intent?.extras?.apply {
             targetDistance = getFloat(SELECT_DISTANCE, 0f)
@@ -156,7 +147,7 @@ class MeasureService : Service(), CoroutineScope {
         serviceState = MeasureState.START
         helper.setTargetDistance(targetDistance)
         startForeground(NotificationHelper.NOTIFICATION_ID, helper.getNotification(), FOREGROUND_SERVICE_TYPE_LOCATION)
-        broadcastTimeUpdate()
+        //broadcastTimeUpdate()
 
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 10f, locationListener)
@@ -191,7 +182,7 @@ class MeasureService : Service(), CoroutineScope {
         }
         else {
             sendBroadcast(Intent(TIMER_ACTION).putExtra(NOTIFICATION_TIME, 0))
-            helper.notificationCancelDelayed()
+            //helper.notificationCancelDelayed()
         }
     }
 
@@ -201,7 +192,7 @@ class MeasureService : Service(), CoroutineScope {
         }
         else {
             sendBroadcast(Intent(DISTANCE_ACTION).putExtra(NOTIFICATION_DISTANCE, 0f))
-            helper.notificationCancelDelayed()
+            //helper.notificationCancelDelayed()
         }
     }
     private fun record() {
@@ -273,8 +264,7 @@ class MeasureService : Service(), CoroutineScope {
                     top10Reference.update(map)
                 }
             }
-            helper.completeNotification(currentTime)
-            currentTime = 0
+            measureComplete()
         }
     }
 }

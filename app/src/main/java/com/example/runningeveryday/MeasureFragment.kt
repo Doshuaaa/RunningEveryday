@@ -131,6 +131,11 @@ class MeasureFragment : Fragment() {
                     binding.distanceSpinner.isEnabled = false
                     //NotificationHelper.isRunning = true
                     CountDownDialog().show()
+                    if(!mainViewModel.isReceiverRegistered) {
+                        context?.registerReceiver(measureReceiver, IntentFilter(TIMER_ACTION), Context.RECEIVER_EXPORTED)
+                        context?.registerReceiver(measureReceiver, IntentFilter(DISTANCE_ACTION), Context.RECEIVER_EXPORTED)
+                        mainViewModel.isReceiverRegistered = true
+                    }
                 } else {
                     AlertDialog.Builder(requireContext()).apply {
                         setTitle("백그라운드 위치 정보 수집 권한 요청")
@@ -156,6 +161,12 @@ class MeasureFragment : Fragment() {
                         //mainViewModel.isForegroundServiceRunning = false
                         binding.distanceSpinner.isEnabled = true
                         sendCommandToForegroundService(MeasureState.STOP)
+                        mContext.unregisterReceiver(measureReceiver)
+                        mainViewModel.isReceiverRegistered = false
+                        tempTime = 0
+                        tempDistance = 0f
+                        binding.timeTextView.text = timeFormat(tempTime)
+                        binding.currentDistanceTextView.text = String.format("%.2f", tempDistance / 1000.0)
                         //record()
                     })
                     setNegativeButton("측정 계속하기",  null)
@@ -175,17 +186,16 @@ class MeasureFragment : Fragment() {
             context?.registerReceiver(measureReceiver, IntentFilter(DISTANCE_ACTION), Context.RECEIVER_EXPORTED)
             mainViewModel.isReceiverRegistered = true
         }
-
         binding.timeTextView.text = timeFormat(tempTime)
         binding.currentDistanceTextView.text = String.format("%.2f", tempDistance / 1000.0)
     }
 
     override fun onPause() {
         super.onPause()
-        if(mainViewModel.isReceiverRegistered) {
-            context?.unregisterReceiver(measureReceiver)
-           mainViewModel.isReceiverRegistered = false
-        }
+//        if(mainViewModel.isReceiverRegistered) {
+//            context?.unregisterReceiver(measureReceiver)
+//           mainViewModel.isReceiverRegistered = false
+//        }
     }
 
     override fun onDestroy() {
@@ -266,6 +276,11 @@ class MeasureFragment : Fragment() {
                 val time = intent.getIntExtra(NOTIFICATION_TIME, 0)
                 tempTime = time
                 updateTimeUi(time)
+
+                if(time == 0) {
+                    mContext.unregisterReceiver(measureReceiver)
+                    mainViewModel.isReceiverRegistered = false
+                }
             }
             else if (intent.action == DISTANCE_ACTION) {
                 val distance = intent.getFloatExtra(NOTIFICATION_DISTANCE, 0f)
