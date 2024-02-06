@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="11"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="#ffffff">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -45,7 +45,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:weightSum="3">
+            android:weightSum="3"
+            android:background="#ffffff">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -105,7 +106,6 @@
         android:layout_marginEnd="30dp"
         android:layout_weight="2.5"
         android:orientation="vertical"
-        android:background="@drawable/round_layout"
         android:layout_marginBottom="5dp">
 
         <TextView
@@ -119,7 +119,7 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="0dp"
             android:background="#959292"/>
 
         <LinearLayout
@@ -178,11 +178,14 @@
 
             </LinearLayout>
         </LinearLayout>
-
-
-
-
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#B1AEAE"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -191,7 +194,6 @@
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="15dp"
         android:layout_weight="5.5"
-        android:background="@drawable/shape_border_rect"
         android:orientation="vertical"
         android:weightSum="8">
 
@@ -206,7 +208,7 @@
                 android:id="@+id/calendar_left_image_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:background="?android:colorBackground"
+                android:background="#ffffff"
                 android:src="@drawable/baseline_arrow_left_24"
                 android:layout_margin="1dp"/>
 
@@ -219,7 +221,7 @@
                 android:id="@+id/calendar_right_image_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:background="?android:colorBackground"
+                android:background="#ffffff"
                 android:src="@drawable/baseline_arrow_right_24"
                 android:layout_margin="1dp"/>
         </LinearLayout>

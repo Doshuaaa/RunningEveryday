@@ -274,8 +274,11 @@ class HomeFragment : Fragment() {
                         val streakData = hashMapOf(
                             streakCalendar.get(Calendar.DAY_OF_MONTH).toString() to "streak"
                         )
-
-                        documentReference.update(streakData as Map<String, Any>)
+                        if(task.data == null) {
+                            documentReference.set(streakData as Map<String, Any>)
+                        } else {
+                            documentReference.update(streakData as Map<String, Any>)
+                        }
                         --loadCount
                         //calRecyclerView.onFlingListener = null
                         initCalendar()
@@ -292,6 +295,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun getTime(time : String) : String{
+
         return when(time) {
             in "00".."02" -> "2000"
             in "03".."05" -> "2300"
