@@ -100,7 +100,10 @@ class NotificationHelper(val context: Context, private var targetDistance: Float
     }
 
     fun notificationCancel() {
+        handler.post(runnable)
+    }
 
+    fun notificationCancelDelayed() {
         handler.postDelayed(runnable, 1000L)
     }
 

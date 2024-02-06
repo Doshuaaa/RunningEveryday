@@ -78,7 +78,7 @@ class MeasureService : Service(), CoroutineScope {
             lastLocation = location
 
             broadcastDistanceUpdate()
-            if(totalDistance >= targetDistance) {
+            if(totalDistance >= 1f) {
 
                 helper.completeNotification(currentTime)
                 ////////
@@ -91,7 +91,7 @@ class MeasureService : Service(), CoroutineScope {
                         putBoolean("exist", true).apply()
                         putInt("time", currentTime).apply()
                         putFloat("target distance", targetDistance).apply()
-                        putLong("date", calendar.timeInMillis)
+                        putLong("date", calendar.timeInMillis).apply()
                     }
                 }
                 ////////
@@ -107,8 +107,8 @@ class MeasureService : Service(), CoroutineScope {
         serviceState = MeasureState.STOP
         totalDistance = 0f
         targetDistance = 0f
-        broadcastTimeUpdate()
-        broadcastDistanceUpdate()
+        //broadcastTimeUpdate()
+        //broadcastDistanceUpdate()
         handler.removeCallbacks(runnable)
         locationManager.removeUpdates(locationListener)
         stopForeground(STOP_FOREGROUND_DETACH)
@@ -144,7 +144,7 @@ class MeasureService : Service(), CoroutineScope {
         super.onDestroy()
         handler.removeCallbacks(runnable)
         locationManager.removeUpdates(locationListener)
-        helper.notificationCancel()
+        // helper.notificationCancel()
 //        if(wakeLock.isHeld) {
 //            wakeLock.release()
 //        }
@@ -181,7 +181,7 @@ class MeasureService : Service(), CoroutineScope {
         stopForeground(STOP_FOREGROUND_DETACH)
         //wakeLock.release()
         currentTime = 0
-        helper.notificationCancel()
+        helper.notificationCancelDelayed()
     }
 
     private fun broadcastTimeUpdate() {
@@ -191,7 +191,7 @@ class MeasureService : Service(), CoroutineScope {
         }
         else {
             sendBroadcast(Intent(TIMER_ACTION).putExtra(NOTIFICATION_TIME, 0))
-            helper.notificationCancel()
+            helper.notificationCancelDelayed()
         }
     }
 
@@ -201,7 +201,7 @@ class MeasureService : Service(), CoroutineScope {
         }
         else {
             sendBroadcast(Intent(DISTANCE_ACTION).putExtra(NOTIFICATION_DISTANCE, 0f))
-            helper.notificationCancel()
+            helper.notificationCancelDelayed()
         }
     }
     private fun record() {

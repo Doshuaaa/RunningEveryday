@@ -226,6 +226,8 @@ class MeasureFragment : Fragment() {
                 sharedPreferences.edit().putBoolean("exist", false).apply()
 
             })
+
+            dialog.show()
         }
     }
 
@@ -275,7 +277,7 @@ class MeasureFragment : Fragment() {
         }
     }
 
-    private fun timeFormat(time: Int) : String{
+    private fun timeFormat(time: Int) : String {
 
         val minute = time / 60
         val second = time % 60
@@ -510,7 +512,7 @@ class MeasureFragment : Fragment() {
         }
 
         private fun countDown() {
-             var countDown = 3
+            var countDown = 3
             val timer = Timer()
             val timerTask = object : TimerTask() {
                 override fun run() {
