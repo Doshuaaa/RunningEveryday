@@ -51,7 +51,18 @@ class SettingActivity : AppCompatActivity() {
         }
 
         binding.signOutTextView.setOnClickListener {
-            signOut()
+            if(MeasureService.targetDistance == 0f) {
+                signOut()
+            }
+            else {
+                val dlg = AlertDialog.Builder(this)
+                dlg.apply {
+                    title = "로그아웃 불가"
+                    setMessage("측정중인 기록이 있어 로그아웃을 할 수 없어요.")
+                    setPositiveButton("확인", null)
+                }
+                dlg.show()
+            }
         }
 
         binding.modifySexTextView.setOnClickListener {
@@ -63,7 +74,18 @@ class SettingActivity : AppCompatActivity() {
         }
 
         binding.accountWithdrawalTextView.setOnClickListener {
-            WithdrawalAccountDialog().show()
+            if(MeasureService.targetDistance == 0f) {
+                WithdrawalAccountDialog().show()
+            }
+            else {
+                val dlg = AlertDialog.Builder(this)
+                dlg.apply {
+                    title = "계정탈퇴 불가"
+                    setMessage("측정중인 기록이 있어 계정탈퇴를 할 수 없어요.")
+                    setPositiveButton("확인", null)
+                }
+                dlg.show()
+            }
         }
 
     }
@@ -89,6 +111,7 @@ class SettingActivity : AppCompatActivity() {
         val intent = Intent(this, LoginActivity::class.java)
         finish()
         startActivity(intent)
+        Toast.makeText(this, "로그아웃 되었습니다", Toast.LENGTH_SHORT).show()
     }
 
     private fun setProfile() {

@@ -25,4 +25,5 @@
     <string name="measure_time">시간</string>
     <string name="grade">등급</string>
     <string name="top_10_measure">Top 10 기록</string>
+    <string name="complete_target_distance">%1skm</string>
 </resources>

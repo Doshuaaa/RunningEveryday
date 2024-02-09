@@ -1,5 +1,6 @@
 package com.example.runningeveryday
 
+import android.app.Dialog
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -7,12 +8,14 @@ import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationCompat
+import com.example.runningeveryday.databinding.DialogMeasureCompleteBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
@@ -94,6 +97,9 @@ class MeasureService : Service(), CoroutineScope {
     }
 
     private fun measureComplete() {
+
+        MeasureCompleteDialog().show()
+
         serviceState = MeasureState.STOP
         totalDistance = 0f
         targetDistance = 0f
@@ -265,6 +271,37 @@ class MeasureService : Service(), CoroutineScope {
                 }
             }
             measureComplete()
+        }
+    }
+
+    inner class MeasureCompleteDialog : Dialog(MeasureFragment.mContext) {
+
+        private var dialogViewBinding: DialogMeasureCompleteBinding? = null
+        private val dialogBinding get() = dialogViewBinding!!
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+            dialogViewBinding = DialogMeasureCompleteBinding.inflate(layoutInflater)
+            setContentView(dialogBinding.root)
+            setCancelable(false)
+            window?.setBackgroundDrawableResource(R.drawable.round_dialog)
+            initView()
+        }
+
+        private fun initView() {
+
+            val record = Record()
+
+            dialogBinding.apply {
+                dismissMeasureCompleteDialog.setOnClickListener {
+                    if(NotificationHelper.vibrator != null) {
+                        NotificationHelper.vibrator?.cancel()
+                    }
+                    dismiss()
+                }
+                measureCompleteTargetDistance.text = getString(R.string.complete_target_distance, String.format("%.1f", targetDistance / 1000.0))
+                measureCompleteTime.text = record.timeFormat(currentTime.toLong())
+                measureCompleteGrade.text = record.getGrade(MainActivity.sex, MainActivity.age, targetDistance.toInt(), currentTime.toLong()).toString()
+            }
         }
     }
 }
