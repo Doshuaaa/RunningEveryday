@@ -6,17 +6,12 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.media.AudioAttributes
 import android.os.CombinedVibration
 import android.os.Handler
 import android.os.Looper
 import android.os.VibrationAttributes
 import android.os.VibrationEffect
-import android.os.Vibrator
 import android.os.VibratorManager
-import androidx.core.app.NotificationCompat
-import androidx.core.content.getSystemService
-import kotlinx.coroutines.delay
 
 private const val CHANNEL_ID = "Channel"
 private const val CHANNEL_NAME = "ChannelName"
@@ -27,7 +22,6 @@ class NotificationHelper(val context: Context, private var targetDistance: Float
     companion object {
         const val NOTIFICATION_ID = 99
         var vibrator: VibratorManager? = null
-        //var isRunning = false
     }
 
     private val handler = Handler(Looper.getMainLooper())
@@ -49,7 +43,6 @@ class NotificationHelper(val context: Context, private var targetDistance: Float
             .setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE)
             .setAutoCancel(true)
             .setOngoing(false)
-            //.setDefaults(Notification.DEFAULT_ALL)
     }
 
     fun getNotification() : Notification {

@@ -142,7 +142,7 @@ class LoginActivity : AppCompatActivity() {
         CheckNetwork.registerActivityNetworkCallback(this, binding.root)
 
         setResultSingUp()
-        auth.signOut()
+        //auth.signOut()
         if(auth.currentUser != null) {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
@@ -155,7 +155,7 @@ class LoginActivity : AppCompatActivity() {
             .requestProfile()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
-        googleSignInClient.signOut()
+        //googleSignInClient.signOut()
 
         binding.googleSignInButton.setOnClickListener {
             signIn()

@@ -22,6 +22,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Spinner
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -100,8 +101,9 @@ class MeasureFragment : Fragment() {
 
         isExistTS()
 
-        binding.distanceSpinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, distanceArray)
-        binding.distanceSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        distanceSpinner = binding.distanceSpinner
+        distanceSpinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, distanceArray)
+        distanceSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
                 binding.maxDistanceTextView.text = distanceArray[position]
                 selectPosition = position
@@ -113,12 +115,12 @@ class MeasureFragment : Fragment() {
 
         when(MeasureService.targetDistance) {
             1500f ->  {
-                binding.distanceSpinner.setSelection(0)
-                binding.distanceSpinner.isEnabled = false
+                distanceSpinner.setSelection(0)
+                distanceSpinner.isEnabled = false
             }
             3000f -> {
-                binding.distanceSpinner.setSelection(1)
-                binding.distanceSpinner.isEnabled = false
+                distanceSpinner.setSelection(1)
+                distanceSpinner.isEnabled = false
             }
         }
 
@@ -128,7 +130,7 @@ class MeasureFragment : Fragment() {
                 if(ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
                     //mainViewModel.isForegroundServiceRunning = true
-                    binding.distanceSpinner.isEnabled = false
+                    distanceSpinner.isEnabled = false
                     //NotificationHelper.isRunning = true
                     CountDownDialog().show()
                     if(!mainViewModel.isReceiverRegistered) {
@@ -159,7 +161,7 @@ class MeasureFragment : Fragment() {
                     setMessage("측정하던 기록을 중단할까요?\n중단시 기록은 저장되지 않아요.")
                     setPositiveButton("중단히기", DialogInterface.OnClickListener { _, _ ->
                         //mainViewModel.isForegroundServiceRunning = false
-                        binding.distanceSpinner.isEnabled = true
+                        distanceSpinner.isEnabled = true
                         sendCommandToForegroundService(MeasureState.STOP)
                         mContext.unregisterReceiver(measureReceiver)
                         mainViewModel.isReceiverRegistered = false
@@ -546,6 +548,7 @@ class MeasureFragment : Fragment() {
     }
 
 
+
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -566,5 +569,7 @@ class MeasureFragment : Fragment() {
             }
         @SuppressLint("StaticFieldLeak")
         lateinit var mContext: Context
+        @SuppressLint("StaticFieldLeak")
+        lateinit var distanceSpinner: Spinner
     }
 }

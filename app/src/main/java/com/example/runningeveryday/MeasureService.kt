@@ -16,6 +16,7 @@ import android.os.PowerManager
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationCompat
 import com.example.runningeveryday.databinding.DialogMeasureCompleteBinding
+import com.example.runningeveryday.databinding.FragmentMeasureBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
@@ -296,6 +297,7 @@ class MeasureService : Service(), CoroutineScope {
                     if(NotificationHelper.vibrator != null) {
                         NotificationHelper.vibrator?.cancel()
                     }
+                    MeasureFragment.distanceSpinner.isEnabled = true
                     dismiss()
                 }
                 measureCompleteTargetDistance.text = getString(R.string.complete_target_distance, String.format("%.1f", targetDistance / 1000.0))
