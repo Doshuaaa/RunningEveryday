@@ -20,6 +20,10 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import com.example.runningeveryday.databinding.ActivityMainBinding
 import com.example.runningeveryday.databinding.DialogInformationBinding
+import com.example.runningeveryday.fragment.HomeFragment
+import com.example.runningeveryday.fragment.MeasureFragment
+import com.example.runningeveryday.fragment.NeedSettingFragment
+import com.example.runningeveryday.fragment.StatsFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Calendar

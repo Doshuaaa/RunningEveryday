@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.runningeveryday.databinding.ActivityDetailedRecordBinding
+import com.example.runningeveryday.model.Record
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
@@ -40,7 +41,6 @@ class DetailedRecordActivity : AppCompatActivity() {
 
         recordCollectionRef.get().addOnSuccessListener {
 
-            val a = it.documents
             for (document in it.documents) {
 
                 when (document.id) {

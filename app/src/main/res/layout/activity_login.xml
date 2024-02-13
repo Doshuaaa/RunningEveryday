@@ -10,12 +10,13 @@
     <ImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@drawable/running_everyday"/>
+        android:src="@drawable/running_everyday"
+        android:contentDescription="@null" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Running Everyday"
+        android:text="@string/running_everyday"
         android:textSize="32sp"
         android:fontFamily="@font/omyu_pretty" />
 

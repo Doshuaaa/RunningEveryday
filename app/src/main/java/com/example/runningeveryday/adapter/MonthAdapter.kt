@@ -6,21 +6,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.runningeveryday.R
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 
 class MonthAdapter(val context: Context) : RecyclerView.Adapter<MonthAdapter.ViewHolder>() {
 
     private val calendar = Calendar.getInstance()
-    private val fireStore = FirebaseFirestore.getInstance()
-    private val firebaseAuth = FirebaseAuth.getInstance()
-    private val dateFormat = SimpleDateFormat("YYYYMM", Locale.KOREA)
-    private val recordReference = fireStore.collection("users")
-        .document(firebaseAuth.uid!!).collection("record")
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val calRecyclerView: RecyclerView = itemView.findViewById(R.id.month_adapter_recycler_view)
@@ -53,16 +44,6 @@ class MonthAdapter(val context: Context) : RecyclerView.Adapter<MonthAdapter.Vie
         }
 
         holder.calRecyclerView.layoutManager = GridLayoutManager(context, 7)
-        //GridLayoutManager()
         holder.calRecyclerView.adapter = DayAdapter(tempMonth, dayList, context)
     }
-
-//    private fun setGradeImage(position: Int) {
-//
-//        val cal = Calendar.getInstance()
-//        cal.time = dayList[position]
-//
-//
-//        recordReference.document(dateFormat.format(cal.time)).get()
-//    }
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -11,11 +12,12 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="등급 기준"
+            android:text="@string/grade_standard"
             android:layout_centerHorizontal="true"
             android:textSize="30sp"
             android:fontFamily="@font/omyu_pretty"
-            android:padding="30dp"/>
+            android:padding="30dp"
+            tools:ignore="RelativeOverlap" />
 
         <ImageView
             android:id="@+id/dismiss_standard_dialog"
@@ -24,7 +26,8 @@
             android:src="@drawable/baseline_cancel_24_gray"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="20dp"/>
+            android:layout_marginEnd="20dp"
+            android:contentDescription="@null" />
 
     </RelativeLayout>
 
@@ -32,7 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15sp"
-        android:text="1.5km"
+        android:text="@string/_1_5km"
         android:textSize="27sp"
         android:fontFamily="@font/omyu_pretty"/>
 
@@ -46,7 +49,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15sp"
-        android:text="3.0km"
+        android:text="@string/_3_0km"
         android:textSize="27sp"
         android:fontFamily="@font/omyu_pretty"/>
 
@@ -55,6 +58,5 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:padding="30dp"/>
-
 
 </LinearLayout>

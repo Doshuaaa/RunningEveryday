@@ -6,8 +6,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.runningeveryday.R
-import com.example.runningeveryday.Record
-import com.example.runningeveryday.StandardRecord
+import com.example.runningeveryday.model.Record
+import com.example.runningeveryday.model.StandardRecord
 
 class StandardAdapter(private val list: ArrayList<StandardRecord>) : RecyclerView.Adapter<StandardAdapter.ViewHolder>() {
 
@@ -61,7 +61,5 @@ class StandardAdapter(private val list: ArrayList<StandardRecord>) : RecyclerVie
                 standardEndTextView.visibility = View.INVISIBLE
             }
         }
-
-
     }
 }

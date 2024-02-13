@@ -1,4 +1,4 @@
-package com.example.runningeveryday
+package com.example.runningeveryday.state
 
 enum class MeasureState {
     START,

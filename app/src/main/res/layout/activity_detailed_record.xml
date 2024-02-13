@@ -14,7 +14,6 @@
             android:id="@+id/detailed_date_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2012년 3월 30일"
             android:layout_margin="20dp"
             android:textSize="20sp"
             android:layout_gravity="center"
@@ -35,7 +34,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1.5 km   - "
+                android:text="@string/_1_5_km"
                 android:textSize="24sp"
                 android:layout_margin="10dp"
                 android:fontFamily="@font/omyu_pretty"/>
@@ -44,25 +43,22 @@
                 android:id="@+id/detailed_1500_time_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="8분 31초"
                 android:textSize="18sp"
                 android:fontFamily="@font/omyu_pretty"
                 android:layout_gravity="center"/>
         </LinearLayout>
 
-
         <ImageView
             android:id="@+id/detailed_1500_grade_image_view"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:src="@drawable/diamond"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:contentDescription="@null" />
 
         <TextView
             android:id="@+id/detailed_1500_grade_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="특급"
             android:layout_gravity="center"
             android:textSize="24sp"
             android:fontFamily="@font/omyu_pretty"/>
@@ -83,7 +79,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="3.0 km   - "
+                android:text="@string/_3_0_km"
                 android:textSize="24sp"
                 android:layout_margin="10dp"
                 android:fontFamily="@font/omyu_pretty"/>
@@ -92,29 +88,25 @@
                 android:id="@+id/detailed_3000_time_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="8분 31초"
                 android:textSize="18sp"
                 android:fontFamily="@font/omyu_pretty"
                 android:layout_gravity="center"/>
         </LinearLayout>
 
-
         <ImageView
             android:id="@+id/detailed_3000_grade_image_view"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:src="@drawable/diamond"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:contentDescription="@null" />
 
         <TextView
             android:id="@+id/detailed_3000_grade_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="특급"
             android:layout_gravity="center"
             android:textSize="24sp"
             android:fontFamily="@font/omyu_pretty"/>
-
 
     </LinearLayout>
 

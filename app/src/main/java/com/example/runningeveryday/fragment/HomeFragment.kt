@@ -1,4 +1,4 @@
-package com.example.runningeveryday
+package com.example.runningeveryday.fragment
 
 import android.content.Context
 import android.content.Intent
@@ -15,6 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.runningeveryday.CheckNetwork
+import com.example.runningeveryday.R
+import com.example.runningeveryday.SettingActivity
 import com.example.runningeveryday.adapter.MonthAdapter
 import com.example.runningeveryday.databinding.FragmentHomeBinding
 import com.example.runningeveryday.dialog.LoadingDialog
@@ -74,8 +77,7 @@ class HomeFragment : Fragment() {
     private val auth = FirebaseAuth.getInstance()
     private val fireStore = FirebaseFirestore.getInstance()
     private val calendar = Calendar.getInstance()
-    private val dateFormat = SimpleDateFormat("YYYY년 M월", Locale.KOREA)
-    //val loadingDlg = LoadingDialog(requireContext())
+    private val dateFormat = SimpleDateFormat("y년 M월", Locale.KOREA)
 
     private val dlgDismissHandler = Handler(Looper.getMainLooper())
     private val runnable = Runnable {
@@ -115,13 +117,11 @@ class HomeFragment : Fragment() {
             CheckNetwork.showNetworkLostDialog(binding.root)
             loadingDialog.dismiss()
         }
-        CheckNetwork.registerFragmentNetworkCallback(this,  binding.root)
+        CheckNetwork.registerFragmentNetworkCallback(this, binding.root)
 
         var curLocation: Location? = null
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
         try {
-           //curLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-
             fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).addOnSuccessListener {
                 if(it != null) {
                     curLocation = it
@@ -133,7 +133,6 @@ class HomeFragment : Fragment() {
         } catch (e: SecurityException) {
             e.printStackTrace()
         }
-
 
         initCalendar()
         getCurrentUserProfile()
@@ -254,7 +253,7 @@ class HomeFragment : Fragment() {
         binding.weatherTextView.text = type
 
         val documentReference = fireStore.collection("users")
-            .document(auth.uid!!).collection("record").document(SimpleDateFormat("YYYYMM", Locale.KOREA).format(calendar.time))
+            .document(auth.uid!!).collection("record").document(SimpleDateFormat("yMM", Locale.KOREA).format(calendar.time))
 
         documentReference.get().addOnSuccessListener { task ->
 
@@ -400,17 +399,6 @@ class HomeFragment : Fragment() {
         })
     }
 
-//    inner class PageSnapReceiver : BroadcastReceiver() {
-//        override fun onReceive(p0: Context?, intent: Intent?) {
-//
-//            if(intent?.action == "PageSnap") {
-//
-//                when(intent.getIntExtra("Page", 0))
-//            }
-//        }
-//
-//    }
-
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -432,20 +420,6 @@ class HomeFragment : Fragment() {
 
     }
 
-//    inner class LoadingDialog(private val context: Context) : Dialog(context) {
-//
-//        private var viewBinding: DialogProgressBinding? = null
-//        private val binding get() = viewBinding!!
-//        override fun onCreate(savedInstanceState: Bundle?) {
-//            super.onCreate(savedInstanceState)
-//            viewBinding = DialogProgressBinding.inflate(layoutInflater)
-//            Glide.with(context).load(R.raw.load_32_128).into(binding.loadingImageView)
-//            setContentView(binding.root)
-//            setCancelable(false)
-//            window?.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
-//        }
-//    }
-
     private fun getCurrentUserProfile() {
         val curUser = GoogleSignIn.getLastSignedInAccount(requireContext())
         Glide.with(requireContext()).load(curUser?.photoUrl.toString()).into(binding.profileImgView)
@@ -456,7 +430,7 @@ class HomeFragment : Fragment() {
     private fun getStreak() {
         streak = 0
         val calendar = Calendar.getInstance()
-        val dateFormat = SimpleDateFormat("YYYYMM", Locale.KOREA)
+        val dateFormat = SimpleDateFormat("yMM", Locale.KOREA)
 
         val collectionReference = fireStore.collection("users")
             .document(auth.uid!!).collection("record")

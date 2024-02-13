@@ -9,36 +9,36 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="1"
         android:gravity="center"
-        android:textSize="20sp"
-        android:padding="10dp"/>
+        android:textSize="25sp"
+        android:padding="10dp"
+        android:fontFamily="@font/omyu_pretty"/>
 
     <TextView
         android:id="@+id/record_date_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="2"
-        android:text="2022년 1월 23일"
-        android:textSize="18sp"
-        android:gravity="center"/>
+        android:textSize="23sp"
+        android:gravity="center"
+        android:fontFamily="@font/omyu_pretty"/>
 
     <TextView
         android:id="@+id/record_time_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="14분 23초"
-        android:textSize="18sp"
-        android:gravity="center"/>
+        android:textSize="23sp"
+        android:gravity="center"
+        android:fontFamily="@font/omyu_pretty"/>
 
     <TextView
         android:id="@+id/record_grade_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="3급"
-        android:textSize="18sp"
-        android:gravity="center"/>
+        android:textSize="23sp"
+        android:gravity="center"
+        android:fontFamily="@font/omyu_pretty"/>
 
 </LinearLayout>

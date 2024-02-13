@@ -1,4 +1,4 @@
-package com.example.runningeveryday
+package com.example.runningeveryday.fragment
 
 import android.content.Context
 import android.os.Bundle
@@ -6,9 +6,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.commit
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.runningeveryday.MainActivity
+import com.example.runningeveryday.R
+import com.example.runningeveryday.model.Record
 import com.example.runningeveryday.adapter.RecordAdapter
 import com.example.runningeveryday.databinding.FragmentStats1500Binding
 import com.example.runningeveryday.dialog.LoadingDialog
@@ -35,7 +37,7 @@ class Stats1500Fragment : Fragment() {
     private val binding get() = viewBinding!!
     private lateinit var top10List  : List<Pair<String, Any>>
     private lateinit var loadingDialog: LoadingDialog
-    lateinit var mContext: Context
+    private lateinit var mContext: Context
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mContext = context
@@ -53,18 +55,15 @@ class Stats1500Fragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        loadingDialog = LoadingDialog(mContext)
+        loadingDialog = LoadingDialog(requireContext())
         loadingDialog.show()
         viewBinding = FragmentStats1500Binding.inflate(layoutInflater)
-//        if(!CheckNetwork.checkNetworkState(mContext)) {
-//            CheckNetwork.showNetworkLostDialog(binding.root)
-//            loadingDialog.dismiss()
-//        }
-//        CheckNetwork.registerFragmentNetworkCallback(this,  binding.root)
+
         setTop10List()
 
         return binding.root
     }
+
     private fun setTop10List() {
 
         val fireStore = FirebaseFirestore.getInstance()

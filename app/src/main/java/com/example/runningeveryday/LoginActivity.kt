@@ -95,13 +95,10 @@ object CheckNetwork {
                         networkDialog.dismiss()
                         fragment.activity?.supportFragmentManager?.beginTransaction()?.detach(fragment)?.commit()
                         fragment.activity?.supportFragmentManager?.beginTransaction()?.attach(fragment)?.commit()
-                        //MainActivity.setFragment(fragment)
                     }
-                    //MainActivity.setFragment(fragment)
                 }
             }
         }
-
         connectivityManager  = fragment.context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkBuilder = NetworkRequest.Builder()
         connectivityManager.registerNetworkCallback(networkBuilder.build(), networkCallback)
@@ -142,7 +139,7 @@ class LoginActivity : AppCompatActivity() {
         CheckNetwork.registerActivityNetworkCallback(this, binding.root)
 
         setResultSingUp()
-        //auth.signOut()
+
         if(auth.currentUser != null) {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
@@ -155,7 +152,6 @@ class LoginActivity : AppCompatActivity() {
             .requestProfile()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
-        //googleSignInClient.signOut()
 
         binding.googleSignInButton.setOnClickListener {
             signIn()
@@ -166,7 +162,7 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        //CheckNetwork.unregisterNetworkCallback(binding.root)
+        CheckNetwork.unregisterNetworkCallback(binding.root)
     }
 
     private fun signIn() {
@@ -192,7 +188,6 @@ class LoginActivity : AppCompatActivity() {
                 val intent = Intent(this, MainActivity::class.java)
                 finish()
                 startActivity(intent)
-
             }
         }
     }
@@ -215,5 +210,4 @@ class LoginActivity : AppCompatActivity() {
             collectionReference.document(auth.uid!!).set(emptyData)
         }
     }
-
 }

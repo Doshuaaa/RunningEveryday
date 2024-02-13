@@ -22,7 +22,7 @@ class DayAdapter(private val tempMonth: Int, private val dayList: MutableList<Da
 
     private val fireStore = FirebaseFirestore.getInstance()
     private val firebaseAuth = FirebaseAuth.getInstance()
-    private val dateFormat = SimpleDateFormat("YYYYMM", Locale.KOREA)
+    private val dateFormat = SimpleDateFormat("yyyyMM", Locale.KOREA)
     private val recordCollectionRef = fireStore.collection("users")
         .document(firebaseAuth.uid!!).collection("record")
 

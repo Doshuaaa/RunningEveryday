@@ -1,4 +1,4 @@
-package com.example.runningeveryday
+package com.example.runningeveryday.fragment
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -28,13 +28,21 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.runningeveryday.CheckNetwork
+import com.example.runningeveryday.service.DISTANCE_ACTION
+import com.example.runningeveryday.service.MeasureService
+import com.example.runningeveryday.service.NOTIFICATION_DISTANCE
+import com.example.runningeveryday.service.NOTIFICATION_TIME
+import com.example.runningeveryday.model.Record
+import com.example.runningeveryday.service.SERVICE_COMMAND
+import com.example.runningeveryday.service.TIMER_ACTION
 import com.example.runningeveryday.databinding.DialogCountDownBinding
 import com.example.runningeveryday.databinding.FragmentMeasureBinding
+import com.example.runningeveryday.state.MeasureState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.lang.NullPointerException
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Locale
 import java.util.Timer
 import java.util.TimerTask
@@ -69,12 +77,8 @@ class MeasureFragment : Fragment() {
 
     private val fireStore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
-    private val calendar = Calendar.getInstance()
-
-    //
     private var tempTime = 0
     private var tempDistance = 0f
-    //
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -95,9 +99,8 @@ class MeasureFragment : Fragment() {
         viewBinding = FragmentMeasureBinding.inflate(layoutInflater)
         if(!CheckNetwork.checkNetworkState(mContext)) {
             CheckNetwork.showNetworkLostDialog(binding.root)
-            //loadingDialog.dismiss()
         }
-        CheckNetwork.registerFragmentNetworkCallback(this,  binding.root)
+        CheckNetwork.registerFragmentNetworkCallback(this, binding.root)
 
         isExistTS()
 
@@ -129,9 +132,8 @@ class MeasureFragment : Fragment() {
             if(MeasureService.targetDistance == 0f) {
                 if(ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
-                    //mainViewModel.isForegroundServiceRunning = true
+
                     distanceSpinner.isEnabled = false
-                    //NotificationHelper.isRunning = true
                     CountDownDialog().show()
                     if(!mainViewModel.isReceiverRegistered) {
                         context?.registerReceiver(measureReceiver, IntentFilter(TIMER_ACTION), Context.RECEIVER_EXPORTED)
@@ -146,7 +148,6 @@ class MeasureFragment : Fragment() {
                             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                                 .setData(Uri.parse("package:${requireContext().packageName}"))
                             startActivity(intent)
-                            //ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 1)
                         })
                         setNegativeButton("거부하기", null)
                         show()
@@ -160,7 +161,6 @@ class MeasureFragment : Fragment() {
                 stopDlg.apply {
                     setMessage("측정하던 기록을 중단할까요?\n중단시 기록은 저장되지 않아요.")
                     setPositiveButton("중단히기", DialogInterface.OnClickListener { _, _ ->
-                        //mainViewModel.isForegroundServiceRunning = false
                         distanceSpinner.isEnabled = true
                         sendCommandToForegroundService(MeasureState.STOP)
                         mContext.unregisterReceiver(measureReceiver)
@@ -169,13 +169,11 @@ class MeasureFragment : Fragment() {
                         tempDistance = 0f
                         binding.timeTextView.text = timeFormat(tempTime)
                         binding.currentDistanceTextView.text = String.format("%.2f", tempDistance / 1000.0)
-                        //record()
                     })
                     setNegativeButton("측정 계속하기",  null)
                 }
                 stopDlg.show()
             }
-
         }
 
         return binding.root
@@ -190,18 +188,6 @@ class MeasureFragment : Fragment() {
         }
         binding.timeTextView.text = timeFormat(tempTime)
         binding.currentDistanceTextView.text = String.format("%.2f", tempDistance / 1000.0)
-    }
-
-    override fun onPause() {
-        super.onPause()
-//        if(mainViewModel.isReceiverRegistered) {
-//            context?.unregisterReceiver(measureReceiver)
-//           mainViewModel.isReceiverRegistered = false
-//        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     private fun isExistTS() {
@@ -259,7 +245,6 @@ class MeasureFragment : Fragment() {
 
     private fun updateTimeUi(time: Int) {
         binding.timeTextView.text = timeFormat(time)
-        //sendCommandToForegroundService(TimerState.STOP)
     }
 
     private fun updateDistanceUi(distance: Float) {
@@ -268,7 +253,6 @@ class MeasureFragment : Fragment() {
 
     class MainViewModel: ViewModel() {
         var isReceiverRegistered: Boolean = false
-        var isForegroundServiceRunning: Boolean = false
     }
 
     inner class MeasureReceiver: BroadcastReceiver() {
@@ -298,7 +282,6 @@ class MeasureFragment : Fragment() {
         val second = time % 60
         return String.format(Locale.KOREA, "%02d : %02d", minute, second)
     }
-    ///////
 
     private fun recordTS(date: Long, time: Int, distance: Float) {
 
@@ -306,7 +289,7 @@ class MeasureFragment : Fragment() {
         val documentReference =
             fireStore.collection("users").document(auth.uid!!)
                 .collection("record")
-                .document(SimpleDateFormat("YYYYMM", Locale.KOREA).format(date).toString())
+                .document(SimpleDateFormat("yyyyMM", Locale.KOREA).format(date).toString())
 
         val dateData = hashMapOf(
              day to "ok"
@@ -369,151 +352,7 @@ class MeasureFragment : Fragment() {
         }
     }
 
-    private fun record() {
-        val targetDistance =
-            when(selectPosition) {
-                0 -> 1500
-                else -> 3000
-            }
-
-
-        val documentReference =
-            fireStore.collection("users").document(auth.uid!!)
-                .collection("record")
-                .document(SimpleDateFormat("YYYYMM", Locale.KOREA).format(calendar.time).toString())
-
-        val dateData = hashMapOf(
-            calendar.get(Calendar.DAY_OF_MONTH).toString() to "ok"
-        )
-
-        documentReference.get().addOnSuccessListener {
-            if(it.data == null) {
-                documentReference.set(dateData as Map<String, String>)
-            } else {
-                documentReference.update(dateData as Map<String, String>)
-            }
-        }
-
-        val timeData = hashMapOf(
-            "time" to tempTime
-        )
-
-
-        documentReference.collection(calendar.get(Calendar.DAY_OF_MONTH).toString())
-            .document(targetDistance.toInt().toString()).set(timeData as Map<String, Any>)
-
-
-        val top10Reference =
-            fireStore.collection("users").document(auth.uid!!)
-                .collection("top10").document(targetDistance.toString())
-
-
-        top10Reference.get().addOnSuccessListener { task ->
-
-            val top10List : MutableList<MutableMap.MutableEntry<String, Any>> = try {
-                task?.data?.entries?.sortedByDescending { it.value as Long }?.toMutableList()!!
-            } catch (e: NullPointerException) {
-                mutableListOf()
-            }
-
-
-            val timeFormat = SimpleDateFormat("yyyy년 M월 dd일", Locale.KOREA)
-
-
-            if(top10List.size in 0..9) {
-                if(top10List.size == 0) {
-                    top10Reference.set(
-                        hashMapOf(
-                            timeFormat.format(calendar.time).toString() to tempTime
-                        ) as Map<String, Any>
-                    )
-                }
-                else {
-                    top10Reference.update(
-                        hashMapOf(
-                            timeFormat.format(calendar.time).toString() to tempTime
-                        ) as Map<String, Any>
-                    )
-                }
-            }
-            else {
-                if (tempTime < top10List[0].value as Long) {
-                    top10List.removeAt(0)
-                    val map = top10List.associate { it.key to it.value }.toMutableMap()
-                    map[timeFormat.format(calendar.time).toString()] = tempTime
-                    top10Reference.update(map)
-                }
-            }
-        }
-
-
-        ///////
-
-//        val documentReference =
-//            fireStore.collection("users").document(auth.uid!!)
-//                .collection("record")
-//                .document(SimpleDateFormat("YYYYMM", Locale.KOREA).format(calendar.time).toString())
-////// 추가될 내용
-//        val top10Reference =
-//            fireStore.collection("users").document(auth.uid!!)
-//                .collection("top10").document(targetDistance.toString())
-//
-//
-//        top10Reference.get().addOnSuccessListener { task ->
-//
-//            val top10List =
-//                task?.data?.entries?.sortedByDescending { it.value as Long }?.toMutableList()!!
-//
-//            val timeFormat = SimpleDateFormat("yyyy년 M월 dd일", Locale.KOREA)
-//
-//            if(top10List.size in 0..9) {
-//                top10Reference.update(
-//                    hashMapOf(
-//                        timeFormat.format(calendar.time).toString() to tempTime
-//                    ) as Map<String, Any>
-//                )
-//            }
-//            else {
-//                if (tempTime < top10List[0].value as Long) {
-//                    top10List.removeAt(0)
-//                    val map = top10List.associate { it.key to it.value }.toMutableMap()
-//                    map[timeFormat.format(calendar.time).toString()] = tempTime
-//                    top10Reference.set(map)
-//                }
-//            }
-//        }
-//
-//        //////
-//        val timeData = hashMapOf(
-//            "time" to tempTime
-//        )
-//
-//        documentReference.collection(calendar.get(Calendar.DAY_OF_MONTH).toString())
-//            .document(targetDistance.toString()).set(timeData as Map<String, Any>)
-//
-//        val dateData = hashMapOf(
-//            calendar.get(Calendar.DAY_OF_MONTH).toString() to "ok"
-//        )
-//        documentReference.update(dateData as Map<String, Any>)
-
-
-//        documentReference.get().addOnSuccessListener {  task ->
-//
-//            if(task.exists()) {
-//                count = task.get("count") as Int
-//            }
-//        }
-
-
-//        collectionReference
-//            .collection("${calendar.get(Calendar.DAY_OF_MONTH)}")
-//            .document(targetDistance.toString()).set(data)
-
-    }
-
     inner class CountDownDialog : Dialog(requireContext()) {
-
-
 
         private var countDownDialogViewBinding: DialogCountDownBinding? = null
         private val countDownBinding get() = countDownDialogViewBinding!!
@@ -546,8 +385,6 @@ class MeasureFragment : Fragment() {
             timer.schedule(timerTask, 0, 1000)
         }
     }
-
-
 
     companion object {
         /**

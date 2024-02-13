@@ -1,4 +1,4 @@
-package com.example.runningeveryday
+package com.example.runningeveryday.fragment
 
 import android.content.Context
 import android.os.Bundle
@@ -8,6 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.runningeveryday.MainActivity
+import com.example.runningeveryday.R
+import com.example.runningeveryday.model.Record
 import com.example.runningeveryday.adapter.RecordAdapter
 import com.example.runningeveryday.databinding.FragmentStats3000Binding
 import com.example.runningeveryday.dialog.LoadingDialog
@@ -55,11 +58,6 @@ class Stats3000Fragment : Fragment() {
         viewBinding = FragmentStats3000Binding.inflate(layoutInflater)
         loadingDialog = LoadingDialog(mContext)
         loadingDialog.show()
-//        if(!CheckNetwork.checkNetworkState(mContext)) {
-//            CheckNetwork.showNetworkLostDialog(binding.root)
-//            loadingDialog.dismiss()
-//        }
-//        CheckNetwork.registerFragmentNetworkCallback(this,  binding.root)
         setTop10List()
         return binding.root
     }

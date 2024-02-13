@@ -1,4 +1,4 @@
-package com.example.runningeveryday
+package com.example.runningeveryday.service
 
 import android.app.Dialog
 import android.app.Service
@@ -12,11 +12,15 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.os.PowerManager
-import androidx.appcompat.app.AlertDialog
-import androidx.core.app.NotificationCompat
+import com.example.runningeveryday.CheckNetwork
+import com.example.runningeveryday.MainActivity
+import com.example.runningeveryday.NotificationHelper
+import com.example.runningeveryday.R
 import com.example.runningeveryday.databinding.DialogMeasureCompleteBinding
-import com.example.runningeveryday.databinding.FragmentMeasureBinding
+import com.example.runningeveryday.fragment.MeasureFragment
+import com.example.runningeveryday.fragment.SELECT_DISTANCE
+import com.example.runningeveryday.model.Record
+import com.example.runningeveryday.state.MeasureState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
@@ -111,14 +115,7 @@ class MeasureService : Service(), CoroutineScope {
         stopForeground(STOP_FOREGROUND_DETACH)
         helper.completeNotification(currentTime)
         currentTime = 0
-       // wakeLock.release()
     }
-
-//    private val wakeLock: PowerManager.WakeLock by lazy {
-//        (getSystemService(Context.POWER_SERVICE) as PowerManager)
-//            .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "RunningEveryday::MeasureWakelock")
-//    }
-
 
     override fun onBind(intent: Intent): IBinder {
         TODO("Return the communication channel to the service.")
@@ -126,7 +123,6 @@ class MeasureService : Service(), CoroutineScope {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        //wakeLock.acquire(60*60*1000L /*1 hour*/)
         intent?.extras?.apply {
             targetDistance = getFloat(SELECT_DISTANCE, 0f)
             when(getSerializable(SERVICE_COMMAND, MeasureState::class.java)) {
@@ -142,11 +138,6 @@ class MeasureService : Service(), CoroutineScope {
         super.onDestroy()
         handler.removeCallbacks(runnable)
         locationManager.removeUpdates(locationListener)
-        // helper.notificationCancel()
-//        if(wakeLock.isHeld) {
-//            wakeLock.release()
-//        }
-
         job.cancel()
     }
 
@@ -154,7 +145,6 @@ class MeasureService : Service(), CoroutineScope {
         serviceState = MeasureState.START
         helper.setTargetDistance(targetDistance)
         startForeground(NotificationHelper.NOTIFICATION_ID, helper.getNotification(), FOREGROUND_SERVICE_TYPE_LOCATION)
-        //broadcastTimeUpdate()
 
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 10f, locationListener)
@@ -189,7 +179,6 @@ class MeasureService : Service(), CoroutineScope {
         }
         else {
             sendBroadcast(Intent(TIMER_ACTION).putExtra(NOTIFICATION_TIME, 0))
-            //helper.notificationCancelDelayed()
         }
     }
 
@@ -199,7 +188,6 @@ class MeasureService : Service(), CoroutineScope {
         }
         else {
             sendBroadcast(Intent(DISTANCE_ACTION).putExtra(NOTIFICATION_DISTANCE, 0f))
-            //helper.notificationCancelDelayed()
         }
     }
     private fun record() {
@@ -207,7 +195,7 @@ class MeasureService : Service(), CoroutineScope {
         val documentReference =
             fireStore.collection("users").document(auth.uid!!)
                 .collection("record")
-                .document(SimpleDateFormat("YYYYMM", Locale.KOREA).format(calendar.time).toString())
+                .document(SimpleDateFormat("yyyyMM", Locale.KOREA).format(calendar.time).toString())
 
         val dateData = hashMapOf(
             calendar.get(Calendar.DAY_OF_MONTH).toString() to "ok"
@@ -233,7 +221,7 @@ class MeasureService : Service(), CoroutineScope {
 
         val top10Reference =
             fireStore.collection("users").document(auth.uid!!)
-                .collection("top10").document(MeasureService.targetDistance.toInt().toString())
+                .collection("top10").document(targetDistance.toInt().toString())
 
 
         top10Reference.get().addOnSuccessListener { task ->
@@ -302,7 +290,9 @@ class MeasureService : Service(), CoroutineScope {
                 }
                 measureCompleteTargetDistance.text = getString(R.string.complete_target_distance, String.format("%.1f", targetDistance / 1000.0))
                 measureCompleteTime.text = record.timeFormat(currentTime.toLong())
-                measureCompleteGrade.text = record.getGrade(MainActivity.sex, MainActivity.age, targetDistance.toInt(), currentTime.toLong()).toString()
+                measureCompleteGrade.text = record.getGrade(
+                    MainActivity.sex,
+                    MainActivity.age, targetDistance.toInt(), currentTime.toLong()).toString()
             }
         }
     }

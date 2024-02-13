@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NeedSettingFragment"
+    tools:context=".fragment.NeedSettingFragment"
     android:orientation="vertical"
     android:gravity="center">
 
@@ -18,18 +18,19 @@
             android:src="@drawable/baseline_cancel_24"
             android:layout_gravity="center"
             android:layout_marginStart="50dp"
-            android:layout_marginEnd="10dp"/>
+            android:layout_marginEnd="10dp"
+            android:contentDescription="@null" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/go_to_set_permission" />
+            android:text="@string/is_location_permission_granted" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/go_to_set_permission_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="위치 권한 설정하러 가기"
+            android:text="@string/go_to_set_location_permission"
             android:textSize="16sp"
             android:layout_marginStart="10dp"
             android:fontFamily="@font/omyu_pretty" />
@@ -47,12 +48,13 @@
             android:src="@drawable/baseline_check_24"
             android:layout_gravity="center"
             android:layout_marginStart="50dp"
-            android:layout_marginEnd="10dp"/>
+            android:layout_marginEnd="10dp"
+            android:contentDescription="@null" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/go_to_set_gps" />
+            android:text="@string/is_gps_permission_granted" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/go_to_activate_gps_button"
@@ -60,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="63dp"
             android:fontFamily="@font/omyu_pretty"
-            android:text="gps 키러 가기"
+            android:text="@string/go_to_set_gps_permission"
             android:textSize="16sp" />
 
     </LinearLayout>

@@ -4,11 +4,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.hardware.input.InputManager
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -18,6 +14,7 @@ import com.example.runningeveryday.databinding.ActivitySettingBinding
 import com.example.runningeveryday.databinding.DialogModifyAgeBinding
 import com.example.runningeveryday.databinding.DialogModifySexBinding
 import com.example.runningeveryday.databinding.DialogReallyWithdrawalBinding
+import com.example.runningeveryday.service.MeasureService
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -257,7 +254,5 @@ class SettingActivity : AppCompatActivity() {
     private fun hideKeyboard() {
         val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
-        //inputManager.hideSoftInputFromWindow(this.findViewById<View>(android.R.id.content).windowToken, 0);
     }
-        // inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
 }

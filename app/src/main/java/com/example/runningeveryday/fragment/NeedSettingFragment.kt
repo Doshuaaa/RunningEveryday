@@ -1,4 +1,4 @@
-package com.example.runningeveryday
+package com.example.runningeveryday.fragment
 
 import android.Manifest
 import android.content.Context
@@ -13,6 +13,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import com.example.runningeveryday.MainActivity
+import com.example.runningeveryday.R
 import com.example.runningeveryday.databinding.FragmentNeedSettingBinding
 
 // TODO: Rename parameter arguments, choose names that match
@@ -37,12 +39,6 @@ class NeedSettingFragment : Fragment() {
     private var gpsActive = false
 
     private val locationManager by lazy { requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager}
-
-    private val permissions = arrayOf(
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.POST_NOTIFICATIONS
-    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

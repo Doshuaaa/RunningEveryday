@@ -7,7 +7,7 @@
     <TextView
         android:layout_width="400dp"
         android:layout_height="wrap_content"
-        android:text="정말로 계정탈퇴 하시겠어요?"
+        android:text="@string/real_withdrawal"
         android:textSize="28sp"
         android:gravity="center"
         android:layout_marginTop="20dp"/>
@@ -15,7 +15,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="계정 탈퇴를 하면 복구가 불가능해요\n탈퇴를 원하면 아래에 '계정탈퇴'라고 적고 '탈퇴하기' 버튼을 눌러주세요"
+        android:text="@string/real_withdrawal_2"
         android:layout_gravity="center"
         android:gravity="center"
         android:layout_marginTop="40dp"
@@ -27,7 +27,7 @@
         android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="80dp"
-        android:hint="계정탈퇴"
+        android:hint="@string/withdrawal"
         android:layout_gravity="center"
         android:autofillHints="no"
         android:inputType="text" />
@@ -36,7 +36,7 @@
         android:id="@+id/withdrawal_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="탈퇴하기"
+        android:text="@string/withdrawal"
         android:layout_gravity="end"
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="20dp"

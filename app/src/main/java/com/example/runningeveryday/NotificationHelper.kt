@@ -92,7 +92,6 @@ class NotificationHelper(val context: Context, private var targetDistance: Float
             .setUsage(VibrationAttributes.USAGE_ALARM)
             .build()
         vibrator?.vibrate(combinedVibration, audioAttributes)
-        //vibrator.cancel()
         notificationBuilder.setContentText("${String.format("%.1f", targetDistance / 1000.0)}km 측정 완료!  <걸린 시간: ${curTime / 60} : ${curTime % 60}>")
 
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())

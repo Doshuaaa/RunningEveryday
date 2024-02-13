@@ -1,4 +1,4 @@
-package com.example.runningeveryday
+package com.example.runningeveryday.model
 
 class Record {
 

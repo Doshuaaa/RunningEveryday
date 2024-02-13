@@ -1,4 +1,4 @@
-package com.example.runningeveryday
+package com.example.runningeveryday.fragment
 
 import android.app.Dialog
 import android.content.Context
@@ -9,14 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.widget.ViewPager2
-import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.example.runningeveryday.CheckNetwork
+import com.example.runningeveryday.MainActivity
+import com.example.runningeveryday.R
+import com.example.runningeveryday.model.Record
 import com.example.runningeveryday.adapter.StandardAdapter
 import com.example.runningeveryday.databinding.DialogStatsStandardBinding
 import com.example.runningeveryday.databinding.FragmentStatsBinding
 import com.google.android.material.tabs.TabLayoutMediator
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -55,13 +55,13 @@ class StatsFragment : Fragment() {
     ): View {
 
         viewBinding = FragmentStatsBinding.inflate(layoutInflater)
-        if(!CheckNetwork.checkNetworkState(mContext)) {
+        if(!CheckNetwork.checkNetworkState(requireContext())) {
             CheckNetwork.showNetworkLostDialog(binding.root)
         }
-        CheckNetwork.registerFragmentNetworkCallback(this,  binding.root)
+        CheckNetwork.registerFragmentNetworkCallback(this, binding.root)
         initViewPager()
 
-        binding.statsStandardInfoImageButton.setOnClickListener {
+        binding.statsStandardInfoImageView.setOnClickListener {
             StatsStandardDialog().show()
         }
 
@@ -91,12 +91,6 @@ class StatsFragment : Fragment() {
 
         binding.statsViewPager2.apply {
             adapter = viewPager2Adapter
-
-//            registerOnPageChangeCallback(object : OnPageChangeCallback() {
-//                override fun onPageSelected(position: Int) {
-//                    super.onPageSelected(position)
-//                }
-//            })
         }
 
         TabLayoutMediator(binding.statsTabLayout, binding.statsViewPager2) {tab, position ->
@@ -106,7 +100,6 @@ class StatsFragment : Fragment() {
             }
         }.attach()
     }
-
 
     companion object {
         /**
@@ -128,7 +121,7 @@ class StatsFragment : Fragment() {
             }
     }
 
-    inner class StatsStandardDialog : Dialog(mContext) {
+    inner class StatsStandardDialog : Dialog(requireContext()) {
 
 
         private var dialogViewBinding: DialogStatsStandardBinding? = null
@@ -155,7 +148,6 @@ class StatsFragment : Fragment() {
             dialogBinding.dismissStandardDialog.setOnClickListener {
                 dismiss()
             }
-
         }
     }
 }
