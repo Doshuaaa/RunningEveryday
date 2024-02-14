@@ -8,10 +8,12 @@ import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import androidx.annotation.RequiresApi
 import com.example.runningeveryday.CheckNetwork
 import com.example.runningeveryday.MainActivity
 import com.example.runningeveryday.NotificationHelper

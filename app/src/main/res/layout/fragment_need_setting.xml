@@ -15,7 +15,6 @@
             android:id="@+id/background_location_permission_image_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/baseline_cancel_24"
             android:layout_gravity="center"
             android:layout_marginStart="50dp"
             android:layout_marginEnd="10dp"
@@ -24,6 +23,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="@string/is_location_permission_granted" />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -33,6 +33,7 @@
             android:text="@string/go_to_set_location_permission"
             android:textSize="16sp"
             android:layout_marginStart="10dp"
+            android:layout_gravity="center"
             android:fontFamily="@font/omyu_pretty" />
     </LinearLayout>
 
@@ -45,7 +46,6 @@
             android:id="@+id/gps_permission_image_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/baseline_check_24"
             android:layout_gravity="center"
             android:layout_marginStart="50dp"
             android:layout_marginEnd="10dp"

@@ -71,7 +71,7 @@ class NeedSettingFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        locationPermission = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
+        locationPermission = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
         gpsActive = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 
         initView()

@@ -77,11 +77,11 @@ class MeasureFragment : Fragment() {
 
     private val fireStore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
-    private var tempTime = 0
-    private var tempDistance = 0f
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+
         mContext = context
     }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -130,29 +130,31 @@ class MeasureFragment : Fragment() {
         binding.measureStartButton.setOnClickListener {
 
             if(MeasureService.targetDistance == 0f) {
-                if(ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
 
-                    distanceSpinner.isEnabled = false
-                    CountDownDialog().show()
-                    if(!mainViewModel.isReceiverRegistered) {
-                        context?.registerReceiver(measureReceiver, IntentFilter(TIMER_ACTION), Context.RECEIVER_EXPORTED)
-                        context?.registerReceiver(measureReceiver, IntentFilter(DISTANCE_ACTION), Context.RECEIVER_EXPORTED)
-                        mainViewModel.isReceiverRegistered = true
-                    }
-                } else {
-                    AlertDialog.Builder(requireContext()).apply {
-                        setTitle("백그라운드 위치 정보 수집 권한 요청")
-                        setMessage("운동 중 정확한 거리 측정을 위해 위치 엑세스 권한을 항상 허용으로 주세요")
-                        setPositiveButton("권한 설정하러 가기", DialogInterface.OnClickListener { _, _ ->
-                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                                .setData(Uri.parse("package:${requireContext().packageName}"))
-                            startActivity(intent)
-                        })
-                        setNegativeButton("거부하기", null)
-                        show()
-                    }
+                distanceSpinner.isEnabled = false
+                CountDownDialog().show()
+                if(!mainViewModel.isReceiverRegistered) {
+                    context?.registerReceiver(measureReceiver, IntentFilter(TIMER_ACTION), Context.RECEIVER_EXPORTED)
+                    context?.registerReceiver(measureReceiver, IntentFilter(DISTANCE_ACTION), Context.RECEIVER_EXPORTED)
+                    mainViewModel.isReceiverRegistered = true
                 }
+//                if(ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+//                    == PackageManager.PERMISSION_GRANTED) {
+//
+//
+//                } else {
+//                    AlertDialog.Builder(requireContext()).apply {
+//                        setTitle("백그라운드 위치 정보 수집 권한 요청")
+//                        setMessage("운동 중 정확한 거리 측정을 위해 위치 엑세스 권한을 항상 허용으로 주세요")
+//                        setPositiveButton("권한 설정하러 가기", DialogInterface.OnClickListener { _, _ ->
+//                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+//                                .setData(Uri.parse("package:${requireContext().packageName}"))
+//                            startActivity(intent)
+//                        })
+//                        setNegativeButton("거부하기", null)
+//                        show()
+//                    }
+//                }
             }
         }
         binding.measureStopButton.setOnClickListener {
@@ -163,8 +165,10 @@ class MeasureFragment : Fragment() {
                     setPositiveButton("중단히기", DialogInterface.OnClickListener { _, _ ->
                         distanceSpinner.isEnabled = true
                         sendCommandToForegroundService(MeasureState.STOP)
-                        mContext.unregisterReceiver(measureReceiver)
+                        //mContext.unregisterReceiver(measureReceiver)
+                        measureReceiver.unregisterMeasureReceiver()
                         mainViewModel.isReceiverRegistered = false
+                        mainViewModel.isServiceRunning = false
                         tempTime = 0
                         tempDistance = 0f
                         binding.timeTextView.text = timeFormat(tempTime)
@@ -182,6 +186,7 @@ class MeasureFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         if(!mainViewModel.isReceiverRegistered) {
+            measureReceiver.unregisterMeasureReceiver()
             context?.registerReceiver(measureReceiver, IntentFilter(TIMER_ACTION), Context.RECEIVER_EXPORTED)
             context?.registerReceiver(measureReceiver, IntentFilter(DISTANCE_ACTION), Context.RECEIVER_EXPORTED)
             mainViewModel.isReceiverRegistered = true
@@ -189,6 +194,15 @@ class MeasureFragment : Fragment() {
         binding.timeTextView.text = timeFormat(tempTime)
         binding.currentDistanceTextView.text = String.format("%.2f", tempDistance / 1000.0)
     }
+
+//    override fun onPause() {
+//        super.onPause()
+//        if(mainViewModel.isReceiverRegistered) {
+//            context?.unregisterReceiver(measureReceiver)
+//            mainViewModel.isReceiverRegistered = false
+//        }
+//    }
+
 
     private fun isExistTS() {
         val sharedPreferences = requireContext().getSharedPreferences("saved record", Context.MODE_PRIVATE)
@@ -253,10 +267,17 @@ class MeasureFragment : Fragment() {
 
     class MainViewModel: ViewModel() {
         var isReceiverRegistered: Boolean = false
+        var isServiceRunning: Boolean = false
     }
 
     inner class MeasureReceiver: BroadcastReceiver() {
-        override fun onReceive(p0: Context?, intent: Intent) {
+
+        private var receiverContext: Context? = null
+        override fun onReceive(con: Context?, intent: Intent) {
+
+            if(receiverContext == null) {
+                receiverContext = con
+            }
 
             if(intent.action == TIMER_ACTION) {
                 val time = intent.getIntExtra(NOTIFICATION_TIME, 0)
@@ -264,7 +285,8 @@ class MeasureFragment : Fragment() {
                 updateTimeUi(time)
 
                 if(time == 0) {
-                    mContext.unregisterReceiver(measureReceiver)
+                    //mContext.unregisterReceiver(measureReceiver)
+                    measureReceiver.unregisterMeasureReceiver()
                     mainViewModel.isReceiverRegistered = false
                 }
             }
@@ -274,6 +296,11 @@ class MeasureFragment : Fragment() {
                 updateDistanceUi(distance)
             }
         }
+
+        fun unregisterMeasureReceiver() {
+            receiverContext?.unregisterReceiver(this)
+        }
+
     }
 
     private fun timeFormat(time: Int) : String {
@@ -376,6 +403,7 @@ class MeasureFragment : Fragment() {
                             dismiss()
                             timer.cancel()
                             sendCommandToForegroundService(MeasureState.START)
+                            mainViewModel.isServiceRunning = true
                         }
                         countDownBinding.countDownTextView.text = countDown.toString()
                         countDown--
@@ -408,5 +436,8 @@ class MeasureFragment : Fragment() {
         lateinit var mContext: Context
         @SuppressLint("StaticFieldLeak")
         lateinit var distanceSpinner: Spinner
+
+        private var tempTime = 0
+        private var tempDistance = 0f
     }
 }

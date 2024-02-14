@@ -160,8 +160,8 @@ class LoginActivity : AppCompatActivity() {
         (binding.googleSignInButton.getChildAt(0) as TextView).text = "구글로 로그인 하기"
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
         CheckNetwork.unregisterNetworkCallback(binding.root)
     }
 

@@ -18,7 +18,7 @@
     <string name="woman">여</string>
     <string name="confirm">확인</string>
     <string name="streak">%1d일째 스트릭 기록중!</string>
-    <string name="is_location_permission_granted">위치 권한 \'항상 허용\' 여부 </string>
+    <string name="is_location_permission_granted">위치 권한 허용 및 \n\'정확한 위치 사용\' 여부 </string>
     <string name="is_gps_permission_granted">gps 활성화 여부</string>
     <string name="ranking">순위</string>
     <string name="measure_date">측정 날짜</string>

@@ -12,12 +12,14 @@ import android.os.Looper
 import android.os.VibrationAttributes
 import android.os.VibrationEffect
 import android.os.VibratorManager
+import com.example.runningeveryday.model.Record
 
 private const val CHANNEL_ID = "Channel"
 private const val CHANNEL_NAME = "ChannelName"
 
 class NotificationHelper(val context: Context, private var targetDistance: Float) {
 
+    val record = Record()
 
     companion object {
         const val NOTIFICATION_ID = 99
@@ -70,12 +72,15 @@ class NotificationHelper(val context: Context, private var targetDistance: Float
 
 
         notificationBuilder.setContentText(
-            "시간: ${curTime / 60} : ${curTime % 60}\n거리: ${
+            "시간: ${record.timeFormat(curTime.toLong())}\n거리: ${
                 String.format(
                     "%.2f",
                     curDistance / 1000.0
                 )
-            } / ${targetDistance}"
+            } / ${String.format(
+                "%.2f",
+                targetDistance / 1000.0
+            )}"
         )
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
 
