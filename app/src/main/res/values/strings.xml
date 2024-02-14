@@ -66,4 +66,5 @@
     <string name="stop_to_measure">측정 중단</string>
     <string name="go_to_set_location_permission">위치 권한 설정하러 가기</string>
     <string name="go_to_set_gps_permission">gps 키러 가기</string>
+    <string name="measure_grade">%1s급</string>
 </resources>

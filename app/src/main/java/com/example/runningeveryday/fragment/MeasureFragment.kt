@@ -43,6 +43,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.lang.NullPointerException
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 import java.util.Timer
 import java.util.TimerTask
@@ -138,23 +139,6 @@ class MeasureFragment : Fragment() {
                     context?.registerReceiver(measureReceiver, IntentFilter(DISTANCE_ACTION), Context.RECEIVER_EXPORTED)
                     mainViewModel.isReceiverRegistered = true
                 }
-//                if(ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-//                    == PackageManager.PERMISSION_GRANTED) {
-//
-//
-//                } else {
-//                    AlertDialog.Builder(requireContext()).apply {
-//                        setTitle("백그라운드 위치 정보 수집 권한 요청")
-//                        setMessage("운동 중 정확한 거리 측정을 위해 위치 엑세스 권한을 항상 허용으로 주세요")
-//                        setPositiveButton("권한 설정하러 가기", DialogInterface.OnClickListener { _, _ ->
-//                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-//                                .setData(Uri.parse("package:${requireContext().packageName}"))
-//                            startActivity(intent)
-//                        })
-//                        setNegativeButton("거부하기", null)
-//                        show()
-//                    }
-//                }
             }
         }
         binding.measureStopButton.setOnClickListener {
@@ -178,6 +162,7 @@ class MeasureFragment : Fragment() {
                 }
                 stopDlg.show()
             }
+            //record()
         }
 
         return binding.root
@@ -194,14 +179,6 @@ class MeasureFragment : Fragment() {
         binding.timeTextView.text = timeFormat(tempTime)
         binding.currentDistanceTextView.text = String.format("%.2f", tempDistance / 1000.0)
     }
-
-//    override fun onPause() {
-//        super.onPause()
-//        if(mainViewModel.isReceiverRegistered) {
-//            context?.unregisterReceiver(measureReceiver)
-//            mainViewModel.isReceiverRegistered = false
-//        }
-//    }
 
 
     private fun isExistTS() {
@@ -411,6 +388,92 @@ class MeasureFragment : Fragment() {
                 }
             }
             timer.schedule(timerTask, 0, 1000)
+        }
+    }
+
+    private fun record() {
+        val calendar = Calendar.getInstance()
+
+        val documentReference =
+            fireStore.collection("users").document(auth.uid!!)
+                .collection("record")
+                .document(SimpleDateFormat("yyyyMM", Locale.KOREA).format(calendar.time).toString())
+
+        val dateData = hashMapOf(
+            calendar.get(Calendar.DAY_OF_MONTH).toString() to "ok"
+        )
+
+        documentReference.get().addOnSuccessListener {
+            if(it.data == null) {
+                documentReference.set(dateData as Map<String, String>)
+            } else {
+                documentReference.update(dateData as Map<String, String>)
+            }
+        }
+
+        val timeData = hashMapOf(
+            "time" to tempTime
+        )
+
+
+        documentReference.collection(calendar.get(Calendar.DAY_OF_MONTH).toString())
+            .document(MeasureService.targetDistance.toInt().toString()).set(timeData as Map<String, Any>)
+
+
+
+        val top10Reference =
+            fireStore.collection("users").document(auth.uid!!)
+                .collection("top10").document(MeasureService.targetDistance.toInt().toString())
+
+
+        top10Reference.get().addOnSuccessListener { task ->
+
+            val top10Map = try {
+                task?.data!!
+            } catch (e: NullPointerException) {
+                mutableMapOf()
+            }
+
+            val top10List : MutableList<MutableMap.MutableEntry<String, Any>> = try {
+                task?.data?.entries?.sortedByDescending { it.value as Long }?.toMutableList()!!
+            } catch (e: NullPointerException) {
+                mutableListOf()
+            }
+
+            val timeFormat = SimpleDateFormat("yyyy년 M월 dd일", Locale.KOREA)
+
+
+            if(top10List.size in 0..9) {
+                if(top10List.size == 0) {
+                    top10Reference.set(
+                        hashMapOf(
+                            timeFormat.format(calendar.time).toString() to tempTime
+                        ) as Map<String, Any>
+                    )
+                }
+                else {
+                    top10Reference.update(
+                        hashMapOf(
+                            timeFormat.format(calendar.time).toString() to tempTime
+                        ) as Map<String, Any>
+                    )
+                }
+            }
+            else if(top10List.size == 10 && top10Map.contains(timeFormat.format(calendar.time))) {
+                top10Reference.update(
+                    hashMapOf(
+                        timeFormat.format(calendar.time).toString() to tempTime
+                    ) as Map<String, Any>
+                )
+            }
+            else {
+                if (tempTime < top10List[0].value as Long) {
+                    top10List.removeAt(0)
+                    val map = top10List.associate { it.key to it.value }.toMutableMap()
+                    map[timeFormat.format(calendar.time).toString()] = tempTime
+                    top10Reference.set(map)
+                }
+            }
         }
     }
 

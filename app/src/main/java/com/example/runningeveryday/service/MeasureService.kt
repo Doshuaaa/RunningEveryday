@@ -193,6 +193,7 @@ class MeasureService : Service(), CoroutineScope {
         }
     }
     private fun record() {
+        val calendar = Calendar.getInstance()
 
         val documentReference =
             fireStore.collection("users").document(auth.uid!!)
@@ -217,16 +218,22 @@ class MeasureService : Service(), CoroutineScope {
 
 
         documentReference.collection(calendar.get(Calendar.DAY_OF_MONTH).toString())
-            .document(targetDistance.toInt().toString()).set(timeData as Map<String, Any>)
+            .document(MeasureService.targetDistance.toInt().toString()).set(timeData as Map<String, Any>)
 
 
 
         val top10Reference =
             fireStore.collection("users").document(auth.uid!!)
-                .collection("top10").document(targetDistance.toInt().toString())
+                .collection("top10").document(MeasureService.targetDistance.toInt().toString())
 
 
         top10Reference.get().addOnSuccessListener { task ->
+
+            val top10Map = try {
+                task?.data!!
+            } catch (e: NullPointerException) {
+                mutableMapOf()
+            }
 
             val top10List : MutableList<MutableMap.MutableEntry<String, Any>> = try {
                 task?.data?.entries?.sortedByDescending { it.value as Long }?.toMutableList()!!
@@ -253,12 +260,19 @@ class MeasureService : Service(), CoroutineScope {
                     )
                 }
             }
+            else if(top10List.size == 10 && top10Map.contains(timeFormat.format(calendar.time))) {
+                top10Reference.update(
+                    hashMapOf(
+                        timeFormat.format(calendar.time).toString() to currentTime
+                    ) as Map<String, Any>
+                )
+            }
             else {
                 if (currentTime < top10List[0].value as Long) {
                     top10List.removeAt(0)
                     val map = top10List.associate { it.key to it.value }.toMutableMap()
                     map[timeFormat.format(calendar.time).toString()] = currentTime
-                    top10Reference.update(map)
+                    top10Reference.set(map)
                 }
             }
             measureComplete()

@@ -39,7 +39,7 @@ class RecordAdapter(private val top10List: List<Pair<String, Any>>, private val 
             when(val grade = record.getGrade(MainActivity.sex, MainActivity.age, distance, top10List[position].second as Long).toString()) {
                 "0" -> gradeTextView.text = "특급"
                 "4" -> gradeTextView.text = "불합격"
-                else -> gradeTextView.text = grade
+                else -> gradeTextView.text = mContext.getString(R.string.measure_grade, grade)
             }
         }
     }
