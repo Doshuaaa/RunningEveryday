@@ -67,4 +67,7 @@
     <string name="go_to_set_location_permission">위치 권한 설정하러 가기</string>
     <string name="go_to_set_gps_permission">gps 키러 가기</string>
     <string name="measure_grade">%1s급</string>
+    <string name="not_exist_stats">기록된 달리기가 없어요</string>
+    <string name="go_to_measure">기록 측정하러 가기</string>
+    <string name="my_career_high">나의 커리어하이</string>
 </resources>
