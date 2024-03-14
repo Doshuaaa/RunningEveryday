@@ -5,14 +5,14 @@ plugins {
 }
 
 android {
-    namespace = "com.example.runningeveryday"
+    namespace = "com.run.runningeveryday"
     compileSdk = 34
 
     buildFeatures {
         viewBinding = true
     }
     defaultConfig {
-        applicationId = "com.example.runningeveryday"
+        applicationId = "com.run.runningeveryday"
         minSdk = 33
         targetSdk = 34
         versionCode = 1
