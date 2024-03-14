@@ -114,6 +114,7 @@ class MainActivity : AppCompatActivity() {
                     setFragment(StatsFragment())
                 }
             }
+            setHomeFragmentTint("#03A9F4")
             setFragment(HomeFragment())
         }
     }
