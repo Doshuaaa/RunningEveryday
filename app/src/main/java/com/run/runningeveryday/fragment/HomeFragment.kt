@@ -2,7 +2,6 @@ package com.run.runningeveryday.fragment
 
 import android.animation.Animator
 import android.content.Context
-import android.content.Intent
 import android.graphics.Point
 import android.location.Location
 import android.os.Bundle
@@ -18,10 +17,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.run.runningeveryday.CheckNetwork
 import com.run.runningeveryday.R
-import com.run.runningeveryday.SettingActivity
 import com.run.runningeveryday.adapter.MonthAdapter
 import com.run.runningeveryday.databinding.FragmentHomeBinding
-import com.run.runningeveryday.dialog.LoadingDialog
 import com.run.runningeveryday.model.Weather
 import com.run.runningeverytime.api.WeatherApi
 import com.google.android.gms.auth.api.signin.GoogleSignIn

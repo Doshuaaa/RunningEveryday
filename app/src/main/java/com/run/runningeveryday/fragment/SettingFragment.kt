@@ -20,7 +20,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.run.runningeveryday.LoginActivity
 import com.run.runningeveryday.MainActivity
 import com.run.runningeveryday.R
-import com.run.runningeveryday.databinding.ActivitySettingBinding
 import com.run.runningeveryday.databinding.DialogModifyAgeBinding
 import com.run.runningeveryday.databinding.DialogModifySexBinding
 import com.run.runningeveryday.databinding.DialogReallyWithdrawalBinding

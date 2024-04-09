@@ -104,16 +104,14 @@ class MeasureService : Service(), CoroutineScope {
     }
 
     private fun measureComplete() {
-
+        handler.removeCallbacks(runnable)
+        locationManager.removeUpdates(locationListener)
         MeasureCompleteDialog().show()
-
         serviceState = MeasureState.STOP
         totalDistance = 0f
         targetDistance = 0f
         broadcastDistanceUpdate()
         broadcastTimeUpdate()
-        handler.removeCallbacks(runnable)
-        locationManager.removeUpdates(locationListener)
         stopForeground(STOP_FOREGROUND_DETACH)
         helper.completeNotification(currentTime)
         currentTime = 0

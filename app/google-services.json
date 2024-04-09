@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:199673986260:android:53f9729807a5880ced0f41",
         "android_client_info": {
-          "package_name": "com.example.runningeveryday"
+          "package_name": "com.run.runningeveryday"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "199673986260-0fuotujgcqhpj07ukm46q6hi46jf1m7o.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.runningeveryday",
+            "package_name": "com.run.runningeveryday",
             "certificate_hash": "e3daae236c6b4071b20ec474e521900621029438"
           }
         },
