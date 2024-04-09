@@ -42,7 +42,7 @@
     <string name="measure_result_time">걸린 시간</string>
     <string name="modify_birth">출생년도 수정하기</string>
     <string name="modify_sex">성별 수정하기</string>
-    <string name="withdrawal">탈퇴하기</string>
+    <string name="withdrawal">계정탈퇴</string>
     <string name="real_withdrawal_2">계정 탈퇴를 하면 복구가 불가능해요\n탈퇴를 원하면 아래에 \'계정탈퇴\'라고 적고 \'탈퇴하기\' 버튼을 눌러주세요</string>
     <string name="real_withdrawal">정말로 계정탈퇴 하시겠어요?</string>
     <string name="grade_standard">등급 기준</string>

@@ -249,7 +249,13 @@ class SettingFragment : Fragment() {
                     fireStore.collection("users").document(firebaseAuth.uid!!).delete().addOnSuccessListener {
                         firebaseAuth.currentUser?.delete()?.addOnCompleteListener {
                             if(it.isSuccessful) {
-
+                                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                    .requestIdToken(getString(R.string.default_web_client_id))
+                                    .requestEmail()
+                                    .requestProfile()
+                                    .build()
+                                val googleSignIn = GoogleSignIn.getClient(requireActivity(), gso)
+                                googleSignIn.signOut()
                                 val dlg = AlertDialog.Builder(context)
                                 dlg.apply {
                                     setMessage("계정이 삭제되었습니다")

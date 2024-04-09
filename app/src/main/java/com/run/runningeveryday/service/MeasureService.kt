@@ -170,13 +170,13 @@ class MeasureService : Service(), CoroutineScope {
     }
 
     private fun measureStop() {
+        handler.removeCallbacks(runnable)
+        locationManager.removeUpdates(locationListener)
         serviceState = MeasureState.STOP
         totalDistance = 0f
         targetDistance = 0f
         broadcastTimeUpdate()
         broadcastDistanceUpdate()
-        handler.removeCallbacks(runnable)
-        locationManager.removeUpdates(locationListener)
         stopForeground(STOP_FOREGROUND_DETACH)
         //wakeLock.release()
         currentTime = 0
