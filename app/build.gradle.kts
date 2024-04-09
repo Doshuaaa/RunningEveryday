@@ -15,7 +15,7 @@ android {
         applicationId = "com.run.runningeveryday"
         minSdk = 33
         targetSdk = 34
-        versionCode = 1
+        versionCode = 4
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -57,8 +57,8 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("com.google.firebase:firebase-firestore:24.10.0")
     implementation ("androidx.viewpager2:viewpager2:1.0.0")
-
     implementation ("com.google.android.gms:play-services-location:21.1.0")
+    implementation("com.airbnb.android:lottie:5.0.2")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

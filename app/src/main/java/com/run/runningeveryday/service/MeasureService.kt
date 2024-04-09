@@ -26,7 +26,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.lang.NullPointerException
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -123,14 +125,23 @@ class MeasureService : Service(), CoroutineScope {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        intent?.extras?.apply {
-            targetDistance = getFloat(SELECT_DISTANCE, 0f)
-            when(getSerializable(SERVICE_COMMAND, MeasureState::class.java)) {
-                MeasureState.START -> measureStart()
-                MeasureState.STOP -> measureStop()
-                else -> return START_STICKY
+
+        val state = intent?.extras?.getSerializable(SERVICE_COMMAND, MeasureState::class.java)
+        runBlocking {
+            CoroutineScope(Dispatchers.Main).launch {
+                if(state == MeasureState.START) {
+                    delay(3000)
+                }
+
+                targetDistance = intent?.extras?.getFloat(SELECT_DISTANCE, 0f)!!
+                when(state) {
+                    MeasureState.START -> measureStart()
+                    MeasureState.STOP -> measureStop()
+                    else -> {}
+                }
             }
         }
+
         return START_STICKY
     }
 

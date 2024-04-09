@@ -1,5 +1,6 @@
 package com.run.runningeveryday.fragment
 
+import android.animation.Animator
 import android.content.Context
 import android.content.Intent
 import android.graphics.Point
@@ -68,9 +69,7 @@ class HomeFragment : Fragment() {
 
     private var viewBinding: FragmentHomeBinding? = null
     private val binding: FragmentHomeBinding by lazy { viewBinding!! }
-    private lateinit var loadingDialog : LoadingDialog
 
-    private var loadCount = 0
     private var streak = 0
     private var calPosition = 11
 
@@ -79,13 +78,9 @@ class HomeFragment : Fragment() {
     private val calendar = Calendar.getInstance()
     private val dateFormat = SimpleDateFormat("y년 M월", Locale.KOREA)
 
-    private val dlgDismissHandler = Handler(Looper.getMainLooper())
+    private val weatherHandler = Handler(Looper.getMainLooper())
     private val runnable = Runnable {
-        if(loadCount == 3) {
-            if(loadingDialog.window != null) {
-                loadingDialog.dismiss()
-            }
-        }
+        binding.lottiLoadingAnimation.cancelAnimation()
     }
 
     private val calRecyclerView by lazy { binding.calendarRecyclerView }
@@ -108,24 +103,33 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        loadCount = 0
+
         streak = 0
-        loadingDialog = LoadingDialog(mContext)
-        loadingDialog.show()
         viewBinding = FragmentHomeBinding.inflate(layoutInflater)
         if(!CheckNetwork.checkNetworkState(mContext)) {
             CheckNetwork.showNetworkLostDialog(binding.root)
-            loadingDialog.dismiss()
         }
         CheckNetwork.registerFragmentNetworkCallback(this, binding.root)
 
-        var curLocation: Location? = null
+        getWeather()
+        initCalendar()
+        getCurrentUserProfile()
+
+        return binding.root
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+//        loadingDialog.dismiss()
+    }
+
+    private fun getWeather() {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
         try {
             fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).addOnSuccessListener {
                 if(it != null) {
-                    curLocation = it
-                    curPoint = dfs_xy_conv(curLocation!!.latitude, curLocation!!.longitude)
+                    val curLocation: Location = it
+                    curPoint = dfs_xy_conv(curLocation.latitude, curLocation.longitude)
                     setWeather(curPoint!!.x.toString(), curPoint!!.y.toString() )
                 }
             }
@@ -133,20 +137,6 @@ class HomeFragment : Fragment() {
         } catch (e: SecurityException) {
             e.printStackTrace()
         }
-
-        initCalendar()
-        getCurrentUserProfile()
-
-        binding.settingImageButton.setOnClickListener {
-            val intent = Intent(mContext, SettingActivity::class.java)
-            startActivity(intent)
-        }
-        return binding.root
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        loadingDialog.dismiss()
     }
 
     private fun setWeather(nx : String, ny : String) {
@@ -264,7 +254,7 @@ class HomeFragment : Fragment() {
 
                     binding.skipRunButton.setOnClickListener {
 
-                        loadingDialog.show()
+                       //weather 로딩 필요?
 
                         binding.skipRunButton.visibility = View.GONE
 
@@ -278,18 +268,16 @@ class HomeFragment : Fragment() {
                         } else {
                             documentReference.update(streakData as Map<String, Any>)
                         }
-                        --loadCount
                         //calRecyclerView.onFlingListener = null
                         initCalendar()
-                        --loadCount
                         getStreak()
                     }
                 }
             } else {
                 binding.skipRunButton.visibility = View.GONE
             }
-            loadCount++
-            dlgDismissHandler.post(runnable)
+
+            weatherHandler.post(runnable)
         }
     }
 
@@ -352,8 +340,6 @@ class HomeFragment : Fragment() {
         calRecyclerView.scrollToPosition(calPosition)
         PagerSnapHelper().attachToRecyclerView(calRecyclerView)
         setCalendar()
-        loadCount++
-        dlgDismissHandler.post(runnable)
 
         binding.calendarLeftImageButton.setOnClickListener{
             calRecyclerView.scrollToPosition(--calPosition)
@@ -465,9 +451,34 @@ class HomeFragment : Fragment() {
             if(activity != null) {
                 binding.streakTextView.text = getString(R.string.streak, streak)
             }
-            loadCount++
-            dlgDismissHandler.post(runnable)
+
         }
+        binding.refreshWeatherImgButton.setOnClickListener {
+            getWeather()
+            binding.lottiLoadingAnimation.playAnimation()
+            binding.weatherLinearLayout.visibility = View.GONE
+            binding.lottiLoadingAnimation.visibility = View.VISIBLE
+        }
+
+        binding.lottiLoadingAnimation.addAnimatorListener(object: Animator.AnimatorListener {
+            override fun onAnimationStart(p0: Animator) {
+
+            }
+
+            override fun onAnimationEnd(p0: Animator) {
+
+            }
+
+            override fun onAnimationCancel(p0: Animator) {
+                binding.lottiLoadingAnimation.visibility = View.GONE
+                binding.weatherLinearLayout.visibility = View.VISIBLE
+            }
+
+            override fun onAnimationRepeat(p0: Animator) {
+                val a = 3
+            }
+
+        })
     }
 
     private fun setCalendar() {

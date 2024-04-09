@@ -362,6 +362,8 @@ class MeasureFragment : Fragment() {
             setCancelable(false)
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             countDown()
+            sendCommandToForegroundService(MeasureState.START)
+            mainViewModel.isServiceRunning = true
         }
 
         private fun countDown() {
@@ -374,8 +376,6 @@ class MeasureFragment : Fragment() {
                         if(countDown <= 0) {
                             dismiss()
                             timer.cancel()
-                            sendCommandToForegroundService(MeasureState.START)
-                            mainViewModel.isServiceRunning = true
                         }
                         countDownBinding.countDownTextView.text = countDown.toString()
                         countDown--

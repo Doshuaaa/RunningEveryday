@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:weightSum="11"
     tools:context=".MainActivity"
@@ -24,17 +25,6 @@
             android:textSize="24sp"
             android:fontFamily="@font/omyu_pretty"
             tools:ignore="RelativeOverlap" />
-
-        <ImageView
-            android:id="@+id/setting_image_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="15dp"
-            android:padding="5dp"
-            android:src="@drawable/baseline_settings_24"
-            android:contentDescription="@null" />
 
     </RelativeLayout>
 
@@ -111,78 +101,112 @@
         android:orientation="vertical"
         android:layout_marginBottom="5dp">
 
-        <TextView
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/current_weather"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:padding="3dp"/>
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/current_weather"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:padding="3dp"
+                android:layout_centerInParent="true"/>
+
+            <ImageButton
+                android:id="@+id/refresh_weather_img_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/baseline_refresh_24"
+                android:background="#ffffff"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="20dp"/>
+        </RelativeLayout>
+
 
         <View
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="#959292"/>
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:baselineAligned="false">
+            android:layout_height="match_parent">
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:id="@+id/weather_linear_layout"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                tools:ignore="NestedWeights,UseCompoundDrawables">
+                android:orientation="horizontal"
+                android:baselineAligned="false">
 
-                <TextView
-                    android:id="@+id/weather_text_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:gravity="center" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    tools:ignore="NestedWeights,UseCompoundDrawables">
 
-                <ImageView
-                    android:id="@+id/weather_image_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:contentDescription="@null" />
+                    <TextView
+                        android:id="@+id/weather_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center" />
 
-            </LinearLayout>
+                    <ImageView
+                        android:id="@+id/weather_image_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:contentDescription="@null" />
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/temp_text_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:gravity="center"
-                    android:textSize="30sp" />
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/pop_text_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center" />
+                    <TextView
+                        android:id="@+id/temp_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="30sp" />
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/skip_run_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/skip_today_running"
-                    android:visibility="gone"/>
+                    <TextView
+                        android:id="@+id/pop_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center" />
 
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/skip_run_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/skip_today_running"
+                        android:visibility="gone"/>
+
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/lotti_loading_animation"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/animation_loading"
+                android:layout_gravity="center"/>
+
+        </FrameLayout>
+
     </LinearLayout>
 
     <View

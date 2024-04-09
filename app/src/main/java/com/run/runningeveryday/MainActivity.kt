@@ -26,6 +26,7 @@ import com.run.runningeveryday.fragment.NeedSettingFragment
 import com.run.runningeveryday.fragment.StatsFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.run.runningeveryday.fragment.SettingFragment
 import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
@@ -66,6 +67,7 @@ class MainActivity : AppCompatActivity() {
     private val homeDrawable: Drawable by lazy { ResourcesCompat.getDrawable(resources, R.drawable.baseline_home_24, null)!! }
     private val measureDrawable: Drawable by lazy { ResourcesCompat.getDrawable(resources, R.drawable.baseline_directions_run_24, null)!!  }
     private val statsDrawable: Drawable by lazy { ResourcesCompat.getDrawable(resources, R.drawable.baseline_query_stats_24, null)!!  }
+    private val settingDrawable: Drawable by lazy { ResourcesCompat.getDrawable(resources, R.drawable.baseline_settings_24, null)!!  }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,6 +98,7 @@ class MainActivity : AppCompatActivity() {
                     setHomeFragmentTint("#03A9F4")
                     setMeasureFragmentTint("#666363")
                     setStatsFragmentTint("#666363")
+                    setSettingFragmentTint("#666363")
                     setFragment(HomeFragment())
                 }
 
@@ -104,6 +107,7 @@ class MainActivity : AppCompatActivity() {
                     setHomeFragmentTint("#666363")
                     setMeasureFragmentTint("#03A9F4")
                     setStatsFragmentTint("#666363")
+                    setSettingFragmentTint("#666363")
                     setFragment(MeasureFragment())
                 }
 
@@ -111,7 +115,16 @@ class MainActivity : AppCompatActivity() {
                     setHomeFragmentTint("#666363")
                     setMeasureFragmentTint("#666363")
                     setStatsFragmentTint("#03A9F4")
+                    setSettingFragmentTint("#666363")
                     setFragment(StatsFragment())
+                }
+
+                settingButton.setOnClickListener{
+                    setHomeFragmentTint("#666363")
+                    setMeasureFragmentTint("#666363")
+                    setStatsFragmentTint("#666363")
+                    setSettingFragmentTint("#03A9F4")
+                    setFragment(SettingFragment())
                 }
             }
             setHomeFragmentTint("#03A9F4")
@@ -135,6 +148,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setSettingFragmentTint(color: String) {
+        DrawableCompat.setTint(settingDrawable, Color.parseColor(color))
+        binding.settingImageText.apply {
+            setCompoundDrawablesWithIntrinsicBounds(null, settingDrawable, null, null)
+            setTextColor(Color.parseColor(color))
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         if(NotificationHelper.vibrator != null) {
@@ -143,9 +164,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkLocationPermission(permissions: Array<String>) : Boolean {
-        return permissions.all {
-            ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
+
+        for(permission in permissions) {
+            if(permission != Manifest.permission.POST_NOTIFICATIONS) {
+                if(ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED) {
+                    return false
+                }
+            }
         }
+        return true
     }
 
     override fun onRequestPermissionsResult(
