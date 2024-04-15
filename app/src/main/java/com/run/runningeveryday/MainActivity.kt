@@ -10,6 +10,7 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.location.LocationManager
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -27,8 +28,13 @@ import com.run.runningeveryday.fragment.StatsFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.run.runningeveryday.fragment.SettingFragment
+import com.run.runningeveryday.service.MeasureService
+import com.run.runningeveryday.state.MeasureState
 import java.util.Calendar
 
+object ServiceStateObj {
+    var serviceState = MeasureState.STOP
+}
 class MainActivity : AppCompatActivity() {
 
     companion object {
@@ -44,6 +50,16 @@ class MainActivity : AppCompatActivity() {
             supportManager.commit {
                 replace(R.id.main_frame_layout, fragment)
                  setReorderingAllowed(true)
+            }
+        }
+    }
+
+    private val onBackPressedCallBack: OnBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if(ServiceStateObj.serviceState == MeasureState.START) {
+                moveTaskToBack(true)
+            } else {
+                finish()
             }
         }
     }
@@ -75,6 +91,7 @@ class MainActivity : AppCompatActivity() {
         supportManager = supportFragmentManager
 
         setContentView(binding.root)
+        //onBackPressedDispatcher.addCallback(onBackPressedCallBack)
 
         mainActivity = this
         checkRegisterInformation()

@@ -168,6 +168,7 @@ class MeasureService : Service(), CoroutineScope {
     }
 
     private fun measureStop() {
+        helper.notificationCancelDelayed()
         handler.removeCallbacks(runnable)
         locationManager.removeUpdates(locationListener)
         serviceState = MeasureState.STOP
@@ -178,7 +179,7 @@ class MeasureService : Service(), CoroutineScope {
         stopForeground(STOP_FOREGROUND_DETACH)
         //wakeLock.release()
         currentTime = 0
-        helper.notificationCancelDelayed()
+
     }
 
     private fun broadcastTimeUpdate() {

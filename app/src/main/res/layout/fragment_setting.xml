@@ -11,18 +11,13 @@
         android:layout_height="wrap_content"
         tools:ignore="UseCompoundDrawables">
 
-        <ImageView
-            android:id="@+id/back_image_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/baseline_arrow_back_24"
-            android:layout_margin="15dp"
-            android:contentDescription="@null" />
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/setting"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="13dp"
+            android:layout_marginBottom="10dp"
             android:layout_gravity="center"
             android:textSize="18sp"/>
 
@@ -181,6 +176,13 @@
 
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/pipp_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="개인정보처리방침"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"/>
 
             <TextView
                 android:id="@+id/account_withdrawal_text_view"

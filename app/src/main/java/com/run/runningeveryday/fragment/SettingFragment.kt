@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -95,6 +96,11 @@ class SettingFragment : Fragment() {
 
         binding.modifyAgeTextView.setOnClickListener {
             ModifyAgeDialog().show()
+        }
+
+        binding.pippTextView.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.notion.so/62f2a6308d7249a2841d4e8749a7a1ff"))
+            startActivity(intent)
         }
 
         binding.accountWithdrawalTextView.setOnClickListener {

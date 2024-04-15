@@ -36,6 +36,7 @@ import com.run.runningeveryday.databinding.FragmentMeasureBinding
 import com.run.runningeveryday.state.MeasureState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.run.runningeveryday.ServiceStateObj
 import java.lang.NullPointerException
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -144,6 +145,7 @@ class MeasureFragment : Fragment() {
                     setPositiveButton("중단히기", DialogInterface.OnClickListener { _, _ ->
                         distanceSpinner.isEnabled = true
                         sendCommandToForegroundService(MeasureState.STOP)
+                       // ServiceStateObj.serviceState = MeasureState.STOP
                         //mContext.unregisterReceiver(measureReceiver)
                         measureReceiver.unregisterMeasureReceiver()
                         mainViewModel.isReceiverRegistered = false
@@ -363,6 +365,7 @@ class MeasureFragment : Fragment() {
             window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             countDown()
             sendCommandToForegroundService(MeasureState.START)
+            //ServiceStateObj.serviceState = MeasureState.START
             mainViewModel.isServiceRunning = true
         }
 
